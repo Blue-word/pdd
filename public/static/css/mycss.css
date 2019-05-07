@@ -1,0 +1,10 @@
+.fixed-table-container tbody td div{
+	/*border-left:1px solid #e4eaec;*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/*分页*/
+.page {
+	margin: -50px 0 20px 750px;
+}

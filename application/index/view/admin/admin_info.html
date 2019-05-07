@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>管理员信息编辑</title>
+
+    <link rel="shortcut icon" href="favicon.ico"> <link href="__PUBLIC__/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
+        <a href="javascript:location.replace(location.href);" title="刷新" >
+            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
+        </a> 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>编辑管理员资料 <small>包括密码和角色</small></h5>
+                        <div class="ibox-tools">
+                            <a href="{:U('admin/admin_list')}" placeholder="返回管理员列表">
+                                <i class="fa fa-reply-all" ></i>
+                            </a>
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form method="post" action="{:U('admin/admin_handle')}" class="form-horizontal m-t" id="signupForm">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">用户名</label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="请输入用户名" name="name" class="form-control" required="" aria-required="true" value="{$info.name}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Email</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="请输入邮箱地址" name="email" class="form-control" type="email" required="" aria-required="true" value="{$info.email}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">描述</label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="管理员描述" name="info" class="form-control" required="" aria-required="true" value="{$info.info}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <if condition="$act eq add">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">登录密码</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" placeholder="请输入管理员密码" name="password" class="form-control" required="" aria-required="true" value="{$info.password}">
+                                    </div>
+                                </div>
+                            <else>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">登录密码</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" placeholder="请输入管理员密码" name="password" class="form-control" value="{$info.password}">
+                                    </div>
+                                </div>
+                            </if>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">所属角色</label>
+                                <div class="col-sm-2">
+                                    <select class="form-control m-b" name="role_id" required="" aria-required="true">
+                                        <volist name="role" id="vo">
+                                            <option value="{$vo.role_id}" <if condition="$vo[role_id] eq $info[role_id]"> selected="selected"</if> >{$vo.role_name}</option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">上级管理员</label>
+                                <div class="col-sm-2">
+                                    <select class="form-control m-b" name="pid">
+                                        <volist name="pid_admin" id="item">
+                                            <option value="{$item.uid}" <if condition="$item[uid] eq $info[pid]"> selected="selected"</if> >{$item.info}</option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <input type="hidden" name="act" value="{$act}">
+                                    <input type="hidden" name="uid" value="{$info.uid}">
+                                    <button class="btn btn-info" type="submit">保存内容</button>
+                                    <a href="{:U('admin/admin_list')}">
+                                        <button class="btn btn-white" type="button"><i class="fa fa-reply-all" >返回</i></button>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 全局js -->
+    <script src="__PUBLIC__/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="__PUBLIC__/static/js/content.js?v=1.0.0"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="__PUBLIC__/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="__PUBLIC__/static/js/plugins/validate/messages_zh.min.js"></script>
+    <script src="__PUBLIC__/static/js/demo/form-validate-demo.js"></script>
+    <!-- layerDate plugin javascript -->
+    <script src="__PUBLIC__/static/js/plugins/layer/laydate/laydate.js"></script>
+    <!-- iCheck -->
+    <script src="__PUBLIC__/static/js/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+    
+</body>
+
+</html>

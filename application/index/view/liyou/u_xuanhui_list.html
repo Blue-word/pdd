@@ -1,0 +1,95 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Amaze UI Examples</title>
+  <link rel="stylesheet" href="__PUBLIC__/static/assets_app/css/amazeui.min.css">
+  <link rel="stylesheet" href="__PUBLIC__/static/assets_app/css/app.css">
+</head>
+<body>
+<div class="am-g">
+  <header data-am-widget="header" class="amazeMarchHead am-header am-header-default">
+    <div class="articleCoverBack" style="background: #fff;color: #00000094;left: 5px;top: 5px;">
+      <i class="am-icon-chevron-left" onClick="javascript :history.back(-2);"></i>
+      <!-- <a href="{:U('liyou/index')}"></a> -->
+    </div>
+    <h1 class="amazeMarchHeadTitle am-header-title">
+    		<i class="am-icon-vimeo"></i>U选
+    </h1>
+  </header>
+
+  <div class="newsList">
+    <foreach name="list" item="vo">
+      <div class="newsListBlock">
+        <div class="newsListTitle">
+            <div class="newsListTitleLeft">
+                <div class="userHead">
+                  <img src="{$vo.picture.0}" >
+                </div>
+                <div class="userName">{$vo.category_name} </div>
+            </div>
+            <div class="newsListTitleRight">
+                <div class="newsListTitleRightMap">
+                  <i class="am-icon-map-o"></i> {$vo.category_name_first}
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <a href="{:U('liyou/u_tao_info',array('id'=>$vo.id))}">
+                <div class="newsListBanner">
+                    <div class="newsListBannerImg">
+                      <img src="{$vo.cover_pic}">
+                    </div>
+                </div>
+                <div class="newsListText">
+                    {$vo.title} 
+                    <h3><span>{$vo.content}</span></h3>
+                </div>
+            </a>
+        </div>
+        
+
+        <div class="newsListTextInfo">
+          <i class="am-icon-heart active" style="font-size: 16px;"> {$vo.love_num}</i> <i class="am-icon-cny active" style="font-size: 16px;"> {$vo.price}</i>
+          
+          <div class="newsListTextInfoNum">
+            <span>
+              <i class="am-icon-comments-o" style="font-size: 13px;"> {$vo.read_num}</i>
+              {$vo.add_time}
+            </span>
+            <!-- <span>{$vo.add_time}</span> -->
+            
+          </div>
+          <div class="newsListTextInfoNum">
+            <!-- <span>5</span>
+            k -->
+          </div>
+        </div>
+      </div>
+    </foreach>
+    
+
+  	 
+
+  	 
+  </div>
+
+</div>
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="__PUBLIC__/static/assets_app/js/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets_app/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="__PUBLIC__/static/assets_app/js/amazeui.min.js"></script>
+</body>
+</html>

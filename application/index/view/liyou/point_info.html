@@ -1,0 +1,65 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>点位详情</title>
+  <link rel="stylesheet" href="__PUBLIC__/static/assets_app/css/amazeui.min.css">
+  <link rel="stylesheet" href="__PUBLIC__/static/assets_app/css/app.css">
+</head>
+<body>
+<div class="am-g">
+ <header data-am-widget="header"
+          class="amazeMarchHead am-header am-header-default">
+           <div class="am-header-left am-header-nav">
+          <i class="am-icon-chevron-left" onClick="javascript :history.back(-1);"></i>
+      </div>
+
+      <h1 class="amazeMarchHeadTitle am-header-title">
+      		<i class="am-icon-skyatlas"></i> {$info.area_name}
+      
+      </h1>
+
+  </header>
+  <div class="special">
+  	<div class="specialContent" style="padding-top: 5px;">
+  		<div class="specialContentTitle">
+  			{$info.name}
+  		</div>
+  		<div class="specialContentTitleTag">
+  			<i class="am-icon-caret-down" style="font-size: 20px;"></i>
+  		</div>
+  	</div>
+  	<div class="specialContentText">地址：<i class="am-icon-at"></i> {$info.address}</div>
+    <br>
+  	<!-- <div class="specialContentUser">
+  		<div class="specialContentUser">
+  			<i> <img src="__PUBLIC__/static/assets_app/img/user01.png"> </i>
+  			<i> <img src="__PUBLIC__/static/assets_app/img/user02.png"></i>
+  			<i> <img src="__PUBLIC__/static/assets_app/img/user03.png"></i>
+  		</div>
+  	</div> -->
+
+  	<div class="specialContentBanner">
+    	<div class="specialContentInfo">
+        <img src="{$info.picture}">
+        <p>{$info.content}</p>
+    	</div>
+    </div>
+</div>
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="__PUBLIC__/static/assets_app/js/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="__PUBLIC__/static/assets_app/js/amazeui.min.js"></script>
+</body>
+</html>

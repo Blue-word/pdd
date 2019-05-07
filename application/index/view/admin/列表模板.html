@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员列表</title>
+    <link rel="shortcut icon" href="favicon.ico"> <link href="__PUBLIC__/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+    <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
+        <a href="javascript:location.replace(location.href);" title="刷新" >
+            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
+        </a> 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <div class="example-wrap">
+                            <h4 class="example-title">工具条</h4>
+                            <div class="example">
+                                <div class="btn-group hidden-xs" id="exampleToolbar" role="group">
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-heart" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <table id="exampleTableToolbar" data-mobile-responsive="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th>管理员</th>
+                                            <th>头像</th>
+                                            <th>Email</th>
+                                            <th>添加时间</th>
+                                            <th>角色</th>
+                                            <th>状态</th>
+                                            <th width="50">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <foreach name="list" item="vo">
+                                            <tr>
+                                                <td data-field="state" data-checkbox="true"></td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.name}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.head_pic}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.email}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.time}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.role_id}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.role_id}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <a href="{:U('admin/admin_info',array('uid'=>$vo['uid']))}"><button class="btn btn-danger btn-sm demo4" >查看</button>
+                                                    </a>
+                                                    <button class="btn btn-warning btn-sm demo5" value="{$vo.id}">审核</button>
+                                                </td>
+                                            </tr>
+                                        </foreach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <!-- Example Pagination -->
+                        <div class="example-wrap">
+                            <h4 class="example-title">分页：客户端</h4>
+                            <div class="example">
+                                <table id="exampleTablePagination" data-toggle="table"  data-query-params="queryParams" data-mobile-responsive="true" data-height="400" data-pagination="true" data-icon-size="outline" data-search="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th data-field="id">ID</th>
+                                            <th data-field="name">名称</th>
+                                            <th data-field="price">价格</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <foreach name="list" item="vo">
+                                            <tr>
+                                              <td data-field="state" data-checkbox="true"></td>
+                                              <td align="center" class="">
+                                                <div>{$vo.id}</div>
+                                              </td>
+                                            </tr>
+                                        </foreach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Pagination -->
+                    </div>
+
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <h4 class="example-title">事件</h4>
+                            <div class="example">
+                                <div class="alert alert-success" id="examplebtTableEventsResult" role="alert">
+                                    事件结果
+                                </div>
+                                <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-heart" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-default">
+                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <table id="exampleTableEvents" data-height="400" data-mobile-responsive="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true"></th>
+                                            <th data-field="id">ID</th>
+                                            <th data-field="name">名称</th>
+                                            <th data-field="price">价格</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="__PUBLIC__/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="__PUBLIC__/static/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Bootstrap table -->
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <!-- Peity -->
+    <script src="__PUBLIC__/static/js/demo/bootstrap-table-demo.js"></script>
+    <!-- Sweet alert -->
+    <script src="__PUBLIC__/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+
+            $('.demo1').click(function () {
+                swal({
+                    title: "欢迎使用SweetAlert",
+                    text: "Sweet Alert 是一个替代传统的 JavaScript Alert 的漂亮提示效果。"
+                });
+            });
+
+            $('.demo2').click(function () {
+                swal({
+                    title: "太帅了",
+                    text: "小手一抖就打开了一个框",
+                    type: "success"
+                });
+            });
+
+            $('.demo3').click(function () {
+                swal({
+                    title: "您确定要删除这条信息吗",
+                    text: "删除后将无法恢复，请谨慎操作！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "删除",
+                    closeOnConfirm: false
+                }, function () {
+                    swal("删除成功！", "您已经永久删除了这条信息。", "success");
+                });
+            });
+
+            // $('.demo4').click(function () {
+            //     swal({
+            //         title: "您确定要『授理』此用户提现吗",
+            //         text: "企业支付到零线后将无法撤回！",
+            //         type: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#DD6B55",
+            //         confirmButtonText: "是的，我『授理』！",
+            //         cancelButtonText: "让我再考虑一下…",
+            //         closeOnConfirm: false,
+            //         closeOnCancel: false
+            //     },
+            //     function (isConfirm) {
+            //         if (isConfirm) {
+            //             var id = $(".demo4").val();
+            //             $.ajax({
+            //                 type: 'POST',
+            //                 url: 'withdraw_audit',
+            //                 dataType: 'json',
+            //                 data: {id: id,act: 'success'},
+            //                 success: function(index){
+            //                     //console.log(id);
+            //                     console.log(index);
+            //                     swal("授理成功！", "您已经授理此提现。", "success");
+            //                 },
+            //                 error:function(index) {
+            //                     // console.log(data);
+            //                     console.log('data');
+            //                     swal("授理失败！", "您的授理出现错误！", "error");
+            //                 },
+            //             });
+            //         } else {
+            //             swal("已取消", "您取消了授理操作！", "error");
+            //         }
+            //     });
+            // });
+
+            $('.demo5').click(function () {
+                swal({
+                    title: "您确定要『驳回』此用户提现吗",
+                    text: "驳回后可重新审核该提现！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "是的，我『驳回』！",
+                    cancelButtonText: "让我再考虑一下…",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        var id = $(".demo5").val();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'withdraw_audit',
+                            dataType: 'json',
+                            data: {id: id,act: 'error'},
+                            success: function(index){
+                                //console.log(id);
+                                console.log(index);
+                                swal("驳回成功！", "您已经驳回此提现。", "success");
+                            },
+                            error:function(index) {
+                                // console.log(data);
+                                console.log('data');
+                                swal("驳回失败！", "您的驳回出现错误！", "error");
+                            },
+                        });
+                    } else {
+                        swal("已取消", "您取消了授理操作！", "error");
+                    }
+                });
+            });
+
+
+        });
+    </script>
+
+</body>
+
+
+</html>

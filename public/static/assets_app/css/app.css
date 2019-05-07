@@ -1,0 +1,91 @@
+html,body {}
+.amazeMarch {}
+.amazeMarchHead { background-color: #fff;     color: #c6cfda; position: fixed; top: 0; left: 0; right: 0; z-index: 999;}
+.amazeMarchHead .amazeMarchHeadTitle { font-size: 18px;color: #f4614d;}
+.amazeMarchHead .amazeMarchHeadTitle .am-icon-vimeo { font-size: 18px; color: #f4614d;}
+.amazeMarchHead .am-header-left { color: #a6a6a6;}
+.newsList { width: 100%; padding: 20px; padding-top: 56px;}
+.newsListBlock { width: 100%; padding-bottom: 26px;}
+.newsListTitle { width: 100%; clear: both; overflow: hidden;}
+.newsListTitleLeft { float: left;}
+.newsListTitleLeft .userHead { width: 36px; border-radius: 50%;overflow: hidden; float: left; margin-right: 12px}
+.newsListTitleLeft .userHead img {width: 100%;} 
+.newsListTitleLeft .userName {  line-height: 36px; color: #666970; float: left; }
+.newsListTitleRight { float: right; text-align: right; color: #b3b5b4}
+.newsListTitleRightMap { font-size: 14px; line-height: 36px; }
+.newsListBanner { width: 100%; padding: 16px 0;}
+.newsListBannerImg { width: 100%; overflow: hidden; border-radius: 3px}
+.newsListBannerImg img  { width: 100%; display: block;}
+.newsListText { font-size: 20px; color: #362c22; line-height: 28px; font-weight: bold; border-bottom: 1px solid #f2f2f2; padding-bottom: 16px;}
+.newsListText span { color: #b1afb0; font-weight: normal;}
+.newsListTextInfo { width: 100%; height: 52px; line-height: 52px;}
+.newsListTextInfo i {margin-right: 24px; font-size: 20px; color: #c8c5c0;}
+.newsListTextInfo i.active { color: #ef5e49;}
+.newsListTextInfoNum { color: #b1b0b5; display: inline-block; float: right; font-size: 13px; margin-left: 16px;}
+.newsListTextInfoNum span { color: #6d6c6a;}
+
+
+.article { width: 100%;}
+.articleCover { width: 100%; position: relative;}
+.articleCoverBack { z-index: 9999; top: 12px; left: 12px; font-size: 16px; border-radius: 50%; color: #fff; width: 36px; height: 36px; line-height: 36px; position: absolute; background:rgba(0,0,0,.5); text-align: center;}
+.articleCover img { width: 100%;}
+.articleCoverInfo { width: 100%;padding: 20px; position: absolute; left: 0; bottom: 0; right: 0; z-index: 10;}
+.articleCoverInfo {width: 100%;}
+.articleCoverInfo .userHead { width: 36px; border-radius: 50%;overflow: hidden; float: left; margin-right: 12px}
+.articleCoverInfo .userHead img {width: 100%;} 
+.articleCoverInfo .userName {  line-height: 36px; color: #e2e9f0; float: left; font-size: 14px; }
+.articleCoverInfoTitle { padding: 16px 0; clear: both; font-size: 24px; color: #fff; line-height: 28px; padding-bottom: 16px; border-bottom: 1px solid #282423;}
+.articleCoverInfo .likeInfo { color: #b1b0b5;float: left; font-size: 13px; margin-right: 16px; padding-top: 16px;}
+.articleCoverInfo .likeInfo span { color: #6d6c6a;}
+.articleCoverBg { width: 100%;position: absolute; top: 0; left: 0; right: 0; bottom: 0; background:url('../img/bgposa.png') bottom no-repeat;-webkit-background-size: 100%; background-size: 100%;}
+
+
+.articleContent { width: 100%; padding:0 20px}
+.articleContentLikeInfo { width: 100%; height: 59px; line-height: 52px;border-bottom: 1px solid #f2f2f2;}
+.articleContentLikeInfo i {margin-right: 24px; font-size: 20px; color: #c8c5c0;}
+.articleContentLikeInfo i.active { color: #ef5e49;}
+.articleContentLikeInfo .share { display: inline-block; float: right; text-align: right; color: #c8c5c0;}
+.articleContentLikeInfo .share i { margin: 0; font-size: 14px;}
+.articleContentText { width: 100%; padding-top: 20px;}
+.articleContentText h3 { font-size: 20px; font-weight: bold; width: 100%; margin: 0;-webkit-margin-before: 0;
+    -webkit-margin-after: 0; }
+.articleContentText p { font-size: 16px; line-height: 20px; color: #222;}
+.articleContentText img { display: block; border-radius: 3px; width: 100%;}
+.articleContentTag { width: 100%; padding: 26px 0;}
+.articleContentTag i { border: 1px solid #c8c5c0; color: #c8c5c0;text-transform:capitalize; border-radius: 9999px; font-size: 12px; font-style: normal; padding: 3px 12px; display: inline-block; }
+.articleContentTag i:hover , .articleContentTag i:active { background: #c8c5c0; color: #fff;}
+
+.articleComment { width: 100%; padding-top: 30px;}
+.articleCommentBlock { 	width: 100%;    border-bottom: 1px solid #f2f2f2; margin-bottom: 12px; padding-bottom: 12px;}
+.articleCommentUserIco { position: relative;width: 36px; overflow: hidden; border-radius: 50%; float: left;}
+.articleCommentUserIco img { width: 100%;}
+.articleCommentUserFont { margin-left: 46px;}
+.articleCommentUserFont .commentUserName { color: #ef6149; font-size: 14px; width: 100%; padding-bottom: 5px;}
+.articleCommentUserFont .commentUserName .likeTag { float: right; display: inline-block;}
+.articleCommentUserFont .commentUserName .likeTag i {margin-left: 14px;font-size: 14px; color: #c8c5c0;}
+.articleCommentUserFont .commentUserName .likeTag i.active { color: #ef5e49;}
+.articleCommentUserFont .commentFont { font-size: 14px; color: #838a90;}
+.replyComment { background: #f4f4f4; border-radius: 3px; padding: 13px; padding-top: 12px; border-bottom: none; border-top: 1px solid #f2f2f2; margin-top: 16px; margin-bottom: 0;}
+
+
+
+.special  { width: 100%;  padding-top: 56px;}
+.specialContent { width: 100%;padding: 20px;}
+.specialContentTitle {width: 100%; font-size: 30px; color: #222; text-align: center; padding: 10px 0;}
+.specialContentTitleTag { width: 100%; text-align: center; color: #d9d9d9;}
+.specialContentText { font-size: 16px; color: #76828f; text-align: center;padding:0px 20px;}
+.specialContentUser { width: 100%; text-align: center; padding: 16px 0;}
+.specialContentUser i { margin: 0 3px; width: 40px; height: 40px; color: #76828f;  text-align: center; border-radius: 50%; overflow: hidden; display: inline-block; background: #f2f2f2;}
+.specialContentUser i img { width: 100%;}
+.specialContentBanner { width: 100%; position: relative;}
+.specialContentBannerTitle { position: absolute;left: 0; right: 0; bottom:20px; z-index: 10; text-align: center; font-size: 24px; padding: 10px; color: #fff;}
+.specialContentBannerTitle span { color: #aea9a5; font-size: 16px; display: block;}
+.specialContentBannerBg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background:url('../img/bgposa.png') bottom no-repeat; opacity: .7;}
+.specialContentBannerBg:hover , .specialContentBannerBg:active { opacity: .3;}
+.specialContentBanner img {width: 100%;}
+.specialContentInfo { width: 100%; padding: 20px;}
+.specialContentInfo h3 { font-size: 20px; font-weight: bold; width: 100%; margin: 0;-webkit-margin-before: 0;
+    -webkit-margin-after: 0; }
+.specialContentInfo p { font-size: 16px; line-height: 20px; color: #222;}
+.specialContentInfo img { width: 100%;}
+.specialComment { padding: 20px;}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>权限信息编辑</title>
+
+    <link rel="shortcut icon" href="favicon.ico"> <link href="__PUBLIC__/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    
+
+</head>
+
+<body class="gray-bg">
+    <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
+        <a href="javascript:location.replace(location.href);" title="刷新" >
+            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
+        </a> 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>编辑权限资料 <small>包括名称和权限</small></h5>
+                        <div class="ibox-tools">
+                            <a href="{:U('admin/right_list')}">
+                                <i class="fa fa-reply-all" ></i>
+                            </a>
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form method="post" action="{:U('admin/right_handle')}" class="form-horizontal m-t" id="signupForm">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="请输入权限名称" name="name" class="form-control" required="" aria-required="true" value="{$info.name}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">所属分组</label>
+                                <div class="col-sm-2">
+                                    <select class="form-control m-b" name="group">
+                                        <option value="">请选择所属分组</option>
+                                        <foreach name="group" item="vo" key="key">
+                                            <option value="{$key}" <if condition="$info[group] eq $key">selected</if>>{$vo}</option>
+                                        </foreach>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">添加权限码</label>
+                                <div class="col-sm-2">
+                                    <select id="controller" class="form-control" onchange="get_act_list(this)" style="width:200px;margin-left:-15px;">
+                                        <option value="">选择控制器</option>
+                                        <foreach name="planList" item="vo">
+                                           <option value="{$vo}">{$vo}</option>
+                                        </foreach>           
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-1" align="center"><h3>@</h3></div>
+                                <div class="col-sm-2">
+                                    <select class="form-control" id="act_list" style="width:150px;">
+                                                       
+                                    </select> 
+                                </div>
+                                <div class="col-sm-1"><input type="button" value="添加" onclick="add_right()" class="btn btn-info"></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">权限码</label>
+                                <div class="col-sm-10">
+                                    <table>
+                                        <tr><th style="width:80%">权限码</th><th style="width: 50px;text-align: center;" >操作</th></tr>
+                                        <tbody id="rightList">
+                                        <foreach name="info[right]" item="vo">
+                                            <tr>
+                                                <td style="padding: 2px;"><input name="right[]" type="text" value="{$vo}" class="form-control" style="width:300px;"></td>
+                                                <td style="text-align: center;"><a class="ncap-btn" href="javascript:;" onclick="$(this).parent().parent().remove();">删除</a></td>
+                                            </tr>
+                                        </foreach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <input type="hidden" name="act" value="{$act}">
+                                    <input type="hidden" name="id" value="{$info.id}">
+                                    <button class="btn btn-primary" type="submit">保存内容</button>
+                                    <a href="{:U('admin/right_list')}">
+                                        <button class="btn btn-white" type="button"><i class="fa fa-reply-all" >返回</i></button>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 全局js -->
+    <script src="__PUBLIC__/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="__PUBLIC__/static/js/content.js?v=1.0.0"></script>
+
+    <!-- jQuery Validation plugin javascript-->
+    <script src="__PUBLIC__/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="__PUBLIC__/static/js/plugins/validate/messages_zh.min.js"></script>
+    <script src="__PUBLIC__/static/js/demo/form-validate-demo.js"></script>
+    <!-- layerDate plugin javascript -->
+    <script src="__PUBLIC__/static/js/plugins/layer/laydate/laydate.js"></script>
+    <!-- iCheck全选 -->
+    <script src="__PUBLIC__/static/js/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+    <script>
+    function adsubmit(){
+        if($('input[name=name]').val() == ''){
+            layer.msg('权限名称不能为空！', {icon: 2,time: 1000});
+            return false;
+        }
+
+        if($('input[name="right\[\]"]').length == 0){
+            layer.msg('权限码不能为空！', {icon: 2,time: 1000});
+            return false;
+        }
+
+        $('#adminHandle').submit();
+    }
+
+    function add_right(){
+        var a = [];
+        $('#rightList .form-control').each(function(i,o){
+            if($(o).val() != ''){
+                a.push($(o).val());
+            }
+        })
+        var ncode = $('#controller').val();
+        if(ncode !== ''){
+            var temp = ncode+'@'+ $('#act_list').val();
+            if($.inArray(temp,a) != -1){
+                layer.msg('此权限码已经添加！', {icon: 2,time: 1000});
+                return false;
+            }
+        }
+        var strtr = '<tr>';
+        if(ncode!= ''){
+            strtr += '<td><input type="text" name="right[]" value="'+ncode+'@'+ $('#act_list').val()+'" class="form-control" style="width:300px;"></td>';
+        }else{
+            strtr += '<td><input type="text" name="right[]" value="" class="form-control" style="width:300px;"></td>';
+        }       
+        strtr += '<td style="text-align: center;"><a href="javascript:;" onclick="$(this).parent().parent().remove();">删除</a></td>';
+        $('#rightList').append(strtr);  
+    }
+
+    function get_act_list(obj){
+        $.ajax({
+            url: "{:U('admin/ajax_get_action')}",
+            type:'post',
+            data: {'controller':$(obj).val()},
+            dataType:'html',
+            success:function(res){
+                // console.log(res);
+                $('#act_list').empty().append(res);
+            }
+        });
+    }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(":checkbox[cka]").click(function(){
+                var $cks = $(":checkbox[ck='"+$(this).attr("cka")+"']");
+                if($(this).is(':checked')){
+                    $cks.each(function(){$(this).prop("checked",true);});
+                }else{
+                    $cks.each(function(){$(this).removeAttr('checked');});
+                }
+            });
+        });
+
+        function choosebox(o){
+            var vt = $(o).is(':checked');
+            if(vt){
+                $('input[type=checkbox]').prop('checked',vt);
+            }else{
+                $('input[type=checkbox]').removeAttr('checked');
+            }
+        }
+    </script>
+
+</body>
+
+</html>
