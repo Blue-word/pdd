@@ -67,10 +67,7 @@
                                                     <elseif condition="$vo.status eq 1">
                                                         <button class="btn btn-warning btn-sm demo5" value="{$vo.id}">关闭</button>
                                                     </if> 
-                                                    <a href="{:U('Pdd/shop_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm demo4" >编辑</button>
-                                                    </a>
-                                                    <a href="{:U('Pdd/shop_del',array('id'=>$vo['id']))}">
-                                                    <button class="btn btn-danger btn-sm demo5" id="delete" value="{$vo.role_id}">删除</button>
+                                                    <a href="{:U('Pdd/shop_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
                                                 </td>
                                             </tr>
