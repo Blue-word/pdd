@@ -218,6 +218,22 @@ class Pdd extends Controller{
 	    }
     }
 
+    public function buyer_group_info(){
+        $id = I('get.id');
+        if ($id) {
+            $where['group'] = $id;
+        } else {
+            $where['group'] = 0;
+        }
+        $where['status'] = 1;
+        $user = M('buyer')->where($where)->getField('id,account');
+        // var_dump($user);
+        $buyer_group = M('buyer_group')->where($this->status_where)->getField('id,name');
+        $this->assign('user',$user);
+        $this->assign('buyer_group',$buyer_group);
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
 
 	public function group_handle(){
         $data = I('post.');
@@ -226,6 +242,32 @@ class Pdd extends Controller{
             $this->success("操作成功",U('shop_list'));
         }else{
             $this->error("操作失败",U('shop_list'));
+        }
+    }
+
+	public function buyer_group_handle()
+    {
+        $data = I('post.');
+        // var_dump($data);
+        if($data['id']){
+            $buyer_group = M('buyer_group')->where(['id'=>$data['id']])->find();
+            // 找出被取消的用户
+            $buyer_list = M('buyer')->where(['group'=>$data['id']])->getField('id' ,true);
+            $buyer_diff = array_diff($buyer_list, $data['user']);
+            foreach ($buyer_diff as $key => $value) {
+                // 取消的用户的分组被重置为0
+                $res = M('buyer')->where(['id'=>$value])->save(['group'=>0]);
+            }
+        } else {
+            foreach ($data['user'] as $key => $value) {
+                // 变更用户分组
+                $res = M('buyer')->where(['id'=>$value])->save(['group'=>$data['group_id']]);
+            }
+        }
+        if($res){
+            $this->success("操作成功",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
+        }else{
+            $this->error("操作失败",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
         }
     }
 

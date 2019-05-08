@@ -26,12 +26,12 @@
                     <div class="col-sm-12">
                         <!-- Example Events -->
                         <div class="example-wrap">
-                            <h4 class="example-title">买家列表</h4>
+                            <h4 class="example-title">买家分组列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/group_insert')}">
+                                    <a href="{:U('Pdd/buyer_group_info')}">
                                         <button type="button" class="btn btn-outline btn-default">
-                                            <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家信息</i>
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家分组</i>
                                         </button>
                                     </a>
                                 </div>
@@ -70,6 +70,7 @@
                                                     <elseif condition="$vo.status eq 1">
                                                         <button class="btn btn-warning btn-sm demo5" value="{$vo.id}">关闭</button>
                                                     </if> 
+													<a href="{:U('Pdd/buyer_group_info',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm demo4" >组员</button>
                                                     <a href="{:U('Pdd/group_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
                                                 </td>
