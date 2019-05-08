@@ -29,9 +29,14 @@
                             <h4 class="example-title">买家分组列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/buyer_group_info')}">
+                                    <a href="{:U('Pdd/group_insert')}">
                                         <button type="button" class="btn btn-outline btn-default">
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家分组</i>
+                                        </button>
+                                    </a>
+                                    <a href="{:U('Pdd/buyer_group_info')}">
+                                        <button type="button" class="btn btn-outline btn-default">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true">批量分配买家</i>
                                         </button>
                                     </a>
                                 </div>
@@ -70,7 +75,7 @@
                                                     <elseif condition="$vo.status eq 1">
                                                         <button class="btn btn-warning btn-sm demo5" value="{$vo.id}">关闭</button>
                                                     </if> 
-													<a href="{:U('Pdd/buyer_group_info',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm demo4" >组员</button>
+													<a href="{:U('Pdd/buyer_group_info',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >组员</button>
                                                     <a href="{:U('Pdd/group_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
                                                 </td>
@@ -105,7 +110,7 @@
     <script src="__PUBLIC__/static/js/demo/bootstrap-table-demo.js"></script>
     <!-- layer -->
     <script src="__PUBLIC__/static/plugins/layer/layer.min.js"></script>
-        <!-- Sweet alert -->
+    <!-- Sweet alert -->
     <script src="__PUBLIC__/static/js/plugins/sweetalert/sweetalert.min.js"></script>
     
     <script>
