@@ -70,6 +70,9 @@
                                                     </if>
                                                 </td>
                                                 <td align="center" class="">
+                                                    <if condition="$value == $vo.id ">
+                                                        <button class="btn btn-primary btn-sm">当前分组执行中</button>
+                                                    </if>
                                                     <if condition="($vo.status eq 0) OR ($vo.status eq -1)">
                                                         <button class="btn btn-warning btn-sm demo4" value="{$vo.id}">启用</button>
                                                     <elseif condition="$vo.status eq 1">

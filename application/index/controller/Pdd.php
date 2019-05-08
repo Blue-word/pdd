@@ -153,6 +153,17 @@ class Pdd extends Controller{
     	return $this->fetch();
     }
 
+    public function checkMobile()
+    {
+        $mobile = I('post.mobile');
+        $is_exist = M('buyer')->where('account',$mobile)->find();
+        if($is_exist) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function user_del()
     {
     	$id = I('get.id');
@@ -178,7 +189,8 @@ class Pdd extends Controller{
     	$model = M('buyer_group');
 
     	$list = $model->select();
-
+        $result = M('config')->where('name','group')->getField('value');
+        $this->assign('value',$result);
     	$this->assign('list',$list);
     	return $this->fetch();
     }
@@ -196,6 +208,8 @@ class Pdd extends Controller{
 
     public function group_insert()
     {
+        $shop_list = M('shop')->select();
+        $this->assign('shop_list',$shop_list);
 		return $this->fetch();
     }
 
@@ -203,6 +217,8 @@ class Pdd extends Controller{
     {
     	$id = I('get.id');
     	$info = M('buyer_group')->where('id',$id)->find();
+        $shop_list = M('shop')->select();
+        $this->assign('shop_list',$shop_list);
     	$this->assign('info',$info);
     	return $this->fetch();
     }

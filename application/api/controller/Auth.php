@@ -122,6 +122,7 @@ class Auth
         }
         // 创建订单
         $order = $this->order($user['address_id'],$store,$user['access_token']);
+
         if($order == false) {
             M('buyer')->where('id',$user['id'])->save([
                     'status' => '0',
@@ -134,8 +135,8 @@ class Auth
         }
         // 获取order支付地址
         // 支付宝 app_id = 9  微信 app_id = 38
-        $app_id = 38;
-        $pay_path = $this->prepay($order['order_sn'],$app_id,$accessToken); // 获取支付信息
+        $app_id = 9;
+        $pay_path = $this->prepay($order['order_sn'],$app_id,$user['access_token']); // 获取支付信息
         return $pay_path;
     }
 

@@ -55,38 +55,38 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">买家手机号</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="买家手机号" name="account" id="title" class="form-control" required="" aria-required="true" value="">
+                                    <input type="text" placeholder="买家手机号" name="account" id="mobile" class="form-control" required="required" aria-required="true" value="" data-url="{:U('checkMobile')}" onblur='check_mobile()'>
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">AccessToken</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="AccessToken" name="access_token" id="access_token" class="form-control" required="" aria-required="true" value="" onblur="caseA()">
+                                    <input type="text" placeholder="AccessToken" name="access_token" id="access_token" class="form-control" required="required" aria-required="true" value="" onblur="caseA()">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">收货人</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="收货人" name="name" class="form-control" required="" aria-required="true" value="">
+                                    <input type="text" placeholder="收货人" name="name" class="form-control" required="required" aria-required="true" value="">
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">省市级</label>
                                 <div class="col-sm-2">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-first" name="province_id" data-url="{:U('api/Auth/getRegions')}" data-live-search="true"  data-size="6">
+                                    <select  class="form-control selectpicker show-tick reset" id="select-first" name="province_id" required="required" data-url="{:U('api/Auth/getRegions')}" data-live-search="true"  data-size="6">
                                         <option value="">请选择省级</option>
 
                                     </select>
                                 </div>  
                                 <div class="col-sm-2" id="box-select-second" style="display:none;">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-second" name="city_id" data-url="{:U('api/Auth/getRegions')}" data-live-search="true"  data-size="6">
+                                    <select  class="form-control selectpicker show-tick reset" required="required" id="select-second" name="city_id" data-url="{:U('api/Auth/getRegions')}" data-live-search="true"  data-size="6">
          
                                     </select>
                                 </div>
                                 <div class="col-sm-2" id="box-select-third" style="display:none;">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-third" name="county_id" data-url="{:U('api/Auth/getRegions')}" data-live-search="true"  data-size="6" required="" aria-required="true">
+                                    <select  class="form-control selectpicker show-tick reset" id="select-third" name="county_id" data-url="{:U('api/Auth/getRegions')}" required="required" data-live-search="true"  data-size="6" required="" aria-required="true">
                       
                                     </select>
                                 </div>
@@ -94,7 +94,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="详细地址" name="address" class="form-control" required="" aria-required="true" value="" onblur="beafter()">
+                                    <input type="text" placeholder="详细地址" name="address" class="form-control" required="required" aria-required="true" value="" onblur="beafter()">
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
@@ -110,7 +110,7 @@
                                 <input type="text" name="city" id="city_name" style="display: none;" >
                                 <input type="text" name="county" id="county_name" style="display: none;">
                                 <div class="col-sm-4 col-sm-offset-2">
-                                    <button class="btn btn-primary" type="submit">提交</button>
+                                    <button class="btn btn-primary" id="submit" type="submit">提交</button>
                                     <a href="{:U('Pdd/user')}">
                                         <button class="btn btn-white" type="button"><i class="fa fa-reply-all" >返回</i></button>
                                     </a>
@@ -143,6 +143,28 @@
 
     <script>
 
+        function check_mobile() {
+            console.log('123');
+            var url = $("#mobile").attr('data-url');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {mobile : $('#mobile').val()},
+                success : function (res) {
+                    if(res == false) {
+                        $('#submit').attr('disabled','disabled');
+                        alert('手机号已被使用!');return;
+                    } else {
+                        $('#submit').removeAttr('disabled');
+                    }
+                },
+                error : function (res) {
+                    // body...
+                }
+            });
+        }
+
         function caseA() {
             var token = $('#access_token').val();
             if(token == '') {
@@ -156,6 +178,9 @@
                     data: {token : token},
                     success : function (res) {
                         res = JSON.parse(res);
+                        if(res.code == '2') {
+                            alert('AccessToken 已失效');return;
+                        }
                         console.log(res)
                         //遍历回传的数据添加到二级select
                         $.each(res.result.regions, function(key, secondData) {
@@ -214,6 +239,9 @@
                     data: {id: firstValue,token : token},
                     success : function (res) {
                         res = JSON.parse(res);
+                        if(res.code == '2') {
+                            alert('AccessToken 已失效');return;
+                        }
                         // console.log(res)
                         //遍历回传的数据添加到二级select
                         var option = '<option value="">请选择市级</option>';
@@ -256,7 +284,10 @@
                     cache:false,    
                     dataType:'json',    
                     success:function(res){   
-                        res = JSON.parse(res);                           
+                        res = JSON.parse(res);   
+                        if(res.code == '2') {
+                            alert('AccessToken 已失效');return;
+                        }                        
                         //遍历回传的数据添加到二级select
                         var option = '<option value="">请选择区级</option>';
                         $("#select-third").append(option);
