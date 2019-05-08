@@ -248,12 +248,12 @@ class Pdd extends Controller{
 	public function buyer_group_handle()
     {
         $data = I('post.');
-        // var_dump($data);
+        // var_dump($data['user']);
         if($data['id']){
             $buyer_group = M('buyer_group')->where(['id'=>$data['id']])->find();
             // 找出被取消的用户
             $buyer_list = M('buyer')->where(['group'=>$data['id']])->getField('id' ,true);
-            $buyer_diff = array_diff($buyer_list, $data['user']);
+            $buyer_diff = array_diff($buyer_list, $data['user']?:[]);
             foreach ($buyer_diff as $key => $value) {
                 // 取消的用户的分组被重置为0
                 $res = M('buyer')->where(['id'=>$value])->save(['group'=>0]);
@@ -265,9 +265,9 @@ class Pdd extends Controller{
             }
         }
         if($res){
-            $this->success("操作成功",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
+            $this->success("操作成功",U('index/pdd/buyer_group_info',array('id'=>$data['id'])));
         }else{
-            $this->error("操作失败",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
+            $this->error("操作失败",U('index/pdd/buyer_group_info',array('id'=>$data['id'])));
         }
     }
 

@@ -188,9 +188,11 @@
                         //遍历回传的数据添加到二级select
                         $.each(res.result.regions, function(key, secondData) {
                             var option = '<option value="'+secondData.region_id+'">'+secondData.region_name+'</option>';
+                            console.log(option)
                             $("#select-first").append(option);
                                
                         })
+                        console.log($("#select-first"))
                         //bootstap-select控件:需刷新对应select                           
                         // $("#select-second").selectpicker('refresh');
                         //二级select展示
