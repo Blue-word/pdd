@@ -32,25 +32,27 @@ class Goods extends Common{
         foreach ($list as $key => $value) {
             $goods_ids[] = $value['goods_id'];
         }
-        $sku_where['goods_id'] = ['in', array_unique($goods_ids)];
-        $sku_where['status'] = 1;
-        $goods_sku = M('goods_sku')->where($sku_where)->select();
-        foreach ($goods_sku as $key => $value) {
-            $goods_sku_list[$value['goods_id']][$key]['sku_id'] = $value['sku_id'];
-            $goods_sku_list[$value['goods_id']][$key]['amount'] = $value['amount'];
-        }
-        // var_dump($goods_sku_list);
-        $shop = M('shop')->where(['status'=>1])->getField('id,name');   //店铺
-        foreach ($list as $key => $value) {
-            $sku_str = '';
-            if ($goods_sku_list[$value['goods_id']]) {
-                foreach ($goods_sku_list[$value['goods_id']] as $k => $v) {
-                    $sku_str .= $v['sku_id'].' / ￥'.$v['amount'].'<br>';
-                }
+        if ($goods_ids) {
+            $sku_where['goods_id'] = ['in', array_unique($goods_ids)];
+            $sku_where['status'] = 1;
+            $goods_sku = M('goods_sku')->where($sku_where)->select();
+            foreach ($goods_sku as $key => $value) {
+                $goods_sku_list[$value['goods_id']][$key]['sku_id'] = $value['sku_id'];
+                $goods_sku_list[$value['goods_id']][$key]['amount'] = $value['amount'];
             }
-            $list[$key]['sku'] = $sku_str;
-            $list[$key]['shop'] = $shop[$value['shop_id']];
-            $list[$key]['time'] = date('Y-m-d H:i', $value['time']);
+            // var_dump($goods_sku_list);
+            $shop = M('shop')->where(['status'=>1])->getField('id,name');   //店铺
+            foreach ($list as $key => $value) {
+                $sku_str = '';
+                if ($goods_sku_list[$value['goods_id']]) {
+                    foreach ($goods_sku_list[$value['goods_id']] as $k => $v) {
+                        $sku_str .= $v['sku_id'].' / ￥'.$v['amount'].'<br>';
+                    }
+                }
+                $list[$key]['sku'] = $sku_str;
+                $list[$key]['shop'] = $shop[$value['shop_id']];
+                $list[$key]['time'] = date('Y-m-d H:i', $value['time']);
+            }
         }
         $shop_list = M('shop')->where(['status'=>1])->select();
         $this->assign('shop_list',$shop_list);
