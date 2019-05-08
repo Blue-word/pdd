@@ -8,6 +8,8 @@
     <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="__PUBLIC__/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
 </head>
 
@@ -27,7 +29,7 @@
                             <h4 class="example-title">买家列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/user_insert')}">
+                                    <a href="{:U('Pdd/group_insert')}">
                                         <button type="button" class="btn btn-outline btn-default">
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家信息</i>
                                         </button>
@@ -57,16 +59,18 @@
                                                 <td>{$vo.real_amount}</td>
                                                 <td align="center" class="">
                                                     <if condition="$vo.status eq 1">
-                                                        <span class="label label-warning">启用</span>
+                                                        <span class="label label-primary">已启用</span>
                                                     <elseif condition="$vo.status eq 0">
-                                                        <span class="label label-default">未启用</span>
+                                                        <span class="label label-default">已关闭</span>
                                                     </if>
                                                 </td>
                                                 <td align="center" class="">
-                                                    <a href="{:U('Pdd/user_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm demo4" >编辑</button>
-                                                    </a>
-                                                    <a href="{:U('Pdd/user_del',array('id'=>$vo['id']))}">
-                                                    <button class="btn btn-danger btn-sm demo5" id="delete" value="{$vo.role_id}">删除</button>
+                                                    <if condition="($vo.status eq 0) OR ($vo.status eq -1)">
+                                                        <button class="btn btn-warning btn-sm demo4" value="{$vo.id}">启用</button>
+                                                    <elseif condition="$vo.status eq 1">
+                                                        <button class="btn btn-warning btn-sm demo5" value="{$vo.id}">关闭</button>
+                                                    </if> 
+                                                    <a href="{:U('Pdd/group_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -100,8 +104,92 @@
     <script src="__PUBLIC__/static/js/demo/bootstrap-table-demo.js"></script>
     <!-- layer -->
     <script src="__PUBLIC__/static/plugins/layer/layer.min.js"></script>
+        <!-- Sweet alert -->
+    <script src="__PUBLIC__/static/js/plugins/sweetalert/sweetalert.min.js"></script>
     
     <script>
+                $('#exampleTableEvents').on('click', '.demo4', function (event) {
+                swal(
+                    {
+                        title: "您确定要开启此店铺吗",
+                        text: "",
+                        type: "warning",
+                        showCancelButton: true,
+                        showRollButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "是的，我『开启』！",
+                        cancelButtonText: "让我再考虑一下…",
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        allowOutsideClick: true,
+                    }, 
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            var id = $(event.currentTarget).attr('value');
+                            var $span = $(event.currentTarget).parent().prev().find("span");
+                            $.ajax({
+                                type: 'POST',
+                                url: "{:U('pdd/group_handle')}",
+                                dataType: 'json',
+                                data: {id: id,act: 'ajax',status: 1},
+                                success: function(index){
+                                    $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo5" value="${id}">关闭</button>`));
+                                    $span.replaceWith('<span class="label label-primary label2">已启用</span>');
+                                    swal("开启成功！", "您已经成功启用。", "success");
+                                },
+                                error:function(index) {
+                                    console.log(index);
+                                    swal("开启失败！", "启用失败！", "error");
+                                },
+                            });
+                        } else {
+                            swal("已取消", "您取消了开启操作！", "error");
+                        }
+                    }
+                );
+            });
+
+
+            $('#exampleTableEvents').on('click', '.demo5', function (event) {
+                swal(
+                    {
+                        title: "您确定要『关闭』此分组吗",
+                        text: "",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "是的，我『关闭』！",
+                        cancelButtonText: "让我再考虑一下…",
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        allowOutsideClick: true,
+                    }, 
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            var id = $(event.currentTarget).attr('value');
+                            var $span = $(event.currentTarget).parent().prev().find("span");
+                            $.ajax({
+                                type: 'POST',
+                                url: "{:U('Pdd/group_handle')}",
+                                dataType: 'json',
+                                data: {id: id,act: 'ajax',status: 0},
+                                success: function(index){
+                                    console.log(index);
+                                    $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo4" value="${id}">审核</button>`));
+                                    $span.replaceWith('<span class="label label-default label2">已关闭</span>');
+                                    swal("关闭成功！", "您已经关闭此分组。", "success");
+                                },
+                                error:function(index) {
+                                    console.log(index);
+                                    swal("关闭失败！", "您的关闭出现错误！", "error");
+                                },
+                            });
+                        } else {
+                            swal("已取消", "您取消了下架操作！", "error");
+                        }
+                    }
+                );
+            });
     </script>
 
 </body>

@@ -185,7 +185,13 @@ class Pdd extends Controller{
 
     public function group_add()
     {
-
+    	$model = M('buyer_group');
+    	$data = I('post.');
+    	if($model->insert($data)){
+	        $this->success('新增成功!',U('group'));
+	    }else{
+	        $this->error('新增失败!');
+	    }
     }
 
     public function group_insert()
@@ -195,12 +201,32 @@ class Pdd extends Controller{
 
     public function group_update()
     {
+    	$id = I('get.id');
+    	$info = M('buyer_group')->where('id',$id)->find();
+    	$this->assign('info',$info);
     	return $this->fetch();
     }
 
     public function group_save()
     {
+    	$model = M('buyer_group');
+    	$data = I('post.');
+    	if($model->where('id',$data['id'])->save($data)){
+	        $this->success('编辑成功!',U('group_update',['id'=>$data['id']]));
+	    }else{
+	        $this->error('编辑失败!');
+	    }
+    }
 
+
+	public function group_handle(){
+        $data = I('post.');
+        $res = M('buyer_group')->where('id',$data['id'])->save(['status'=>$data['status']]);
+        if($res){
+            $this->success("操作成功",U('shop_list'));
+        }else{
+            $this->error("操作失败",U('shop_list'));
+        }
     }
 
 }
