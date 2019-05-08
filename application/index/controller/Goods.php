@@ -59,9 +59,15 @@ class Goods extends Common{
     }
 
     public function goods_info(){
+        $id = I('get.id');
+        if ($id) {
+            $goods = M('goods')->where(['id'=>$id])->find();
+            $this->assign('info',$goods);
+        }
         $shop_list = M('shop')->where(['status'=>1])->select();
         $act = empty($id) ? 'add' : 'edit';
         $this->assign('act',$act);
+        $this->assign('id',$id);
         $this->assign('shop_list',$shop_list);
         return $this->fetch();
     }
