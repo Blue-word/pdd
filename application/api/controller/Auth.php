@@ -112,7 +112,7 @@ class Auth
         $user = $user_info['user'];
         $group_id = $user_info['group_id'];
         // 获取商品详情
-        $price = 100;
+        $price = I('post.price');
         $store = $this->getStore($price,$group_id);
         if($store == false) {
             return json_encode([
@@ -120,6 +120,8 @@ class Auth
                 'msg'  => '商品金额参数不合规范! --'. $pirce,
             ]);
         }
+        
+        // halt($store);
         // 创建订单
         $order = $this->order($user['address_id'],$store,$user['access_token']);
 
@@ -137,7 +139,16 @@ class Auth
         // 支付宝 app_id = 9  微信 app_id = 38
         $app_id = 9;
         $pay_path = $this->prepay($order['order_sn'],$app_id,$user['access_token']); // 获取支付信息
-        return $pay_path;
+
+        $result = json_decode($json,true);
+        $url = http_build_query($result['query']);
+        // direct($result['gateway_url'] . '?' .$url);
+        $url = $result['gateway_url'] . '?' .$url;
+        return json_encode([
+            'code'  => '200',
+            'result' => $result,
+            'url'    => $url
+        ]);
     }
 
     // 获取当前请求执行用户
@@ -166,8 +177,17 @@ class Auth
         if(($info['info'] > $info['cate']))  { 
             // 找出同组下一位执行用户
             $last_user = $model->where('name','last_user')->find(); 
-            $where['group'] = $info['value'];
-            $where['id'] = ['gt',$last_user['value']];
+            if($last_user == null) {
+                $user = db('buyer')->where('status','1')->where('group',$info['value'])->find();
+                $model->insert([
+                    'name'  => 'last_user',
+                    'value' => $user['id'],
+                ]);
+            } else {
+                $where['group'] = $info['value'];
+                $where['id'] = ['gt',$last_user['value']];
+            }
+
         } else {
             // 找出下一组。替换 config 表
             $group = db('buyer_group')->where('id','>',$info['value'])->where('status','1')->find();
@@ -179,10 +199,14 @@ class Auth
             $where['group'] = $group['id'];
         }
         // 查询出满足条件的用户
-        $user = db('buyer')->where($where)->where('status','1')->find();
+        if(!isset($user)) {
+            $user = db('buyer')->where($where)->where('status','1')->find();
+        }
+
+        // halt($user);
         if($user == null && isset($where['id'])) {
             unset($where['id']);
-            $user = db('buyer')->where($where)->where('status','1')->find();
+            $user = db('buyer')->where($where)->where('status','1')->order('id asc')->find();
         } 
 
         if($user == null) {
@@ -230,6 +254,34 @@ class Auth
         return compact('num','info');
     }
 
+
+    public function link()
+    {
+        $json = '{
+    "server_time": 1557323506,
+    "gateway_url": "https://mapi.alipay.com/gateway.do",
+    "query": {
+        "service": "alipay.wap.create.direct.pay.by.user",
+        "partner": "2088911201740274",
+        "seller_id": "pddzhifubao@yiran.com",
+        "payment_type": "1",
+        "notify_url": "http://payv3.yangkeduo.com/notify/9",
+        "out_trade_no": "XP0019050821200908262650005802",
+        "subject": "订单编号190508-373168211193496",
+        "total_fee": "49.8",
+        "return_url": "http://mobile.yangkeduo.com/transac_wappay_callback.html?order_sn=190507-070101238553922&prepay_type=",
+        "sign": "SdIQ5oAbh9vNCxco4rUp7FTjR6GR89f7X41hlwYHefCp27BqGgWknYUn8d9WAhep37nZVqys1Uvx8R6Dae8aA9ZJkc9rkulPYED5Sz4urIeWiQUbccz65X5Kur6HQNEFWgHogEhMb6W/nJjc+FGq9XeSJOTO0cVdAqVbRF7moDo=",
+        "sign_type": "RSA",
+        "goods_type": "1",
+        "_input_charset": "utf-8"
+    },
+    "status": 10000
+}';
+        $result = json_decode($json,true);
+        $url = http_build_query($result['query']);
+        // direct($result['gateway_url'] . '?' .$url);
+        halt($result['gateway_url'] . '?' .$url);
+    }
 
 
     public function getStoreA()
