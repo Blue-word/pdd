@@ -66,50 +66,5 @@ class Common extends Controller{
         $result = C('image').$picture;
         return $result;
     }
-    /**
-     * 获取分类信息
-     *
-     * @author blue 2018-12-17
-     * @param  string  $model 模型
-     * @param  integer $type  类型
-     * @param  string  $id    分类id
-     * @return [type]         [description]
-     */
-    public function getcFirstCategory($model='',$type=1,$id=''){
-        if (!$model || !$id) {
-            return array('code'=>1,'msg'=>'模型或分类id不能为空');
-        }
-        $return = array();
-        if ($type == 1) {   //type=1获取分类信息
-            $res = M($model)->where('id='.$id)->find();
-            $return = array('code'=>0,'msg'=>'查询成功','info'=>$res);
-        }elseif ($type == 2) {  //type=2获取上级分类信息
-            $pid = M($model)->where('id='.$id)->getField('pid');
-            if ($pid == 0) {
-                $return = array('code'=>1,'msg'=>'已是顶级分类');
-            }else{
-                $res = M($model)->where('id='.$pid)->find();
-                $return = array('code'=>0,'msg'=>'查询成功','info'=>$res);
-            }
-        }elseif ($type == 3) {  //type=3获取顶级分类信息
-            $info = M($model)->where('id='.$id)->find();
-            if ($info['level'] == 1) {
-                $res = M($model)->where('id='.$info['id'])->find();
-                $return = array('code'=>0,'msg'=>'查询成功','info'=>$res);
-            }elseif ($info['level'] ==  2) {
-                $res = M($model)->where('id='.$info['pid'])->find();
-                $return = array('code'=>0,'msg'=>'查询成功','info'=>$res);
-            }elseif ($info['level'] ==  3) {
-                $pid = M($model)->where('id='.$info['pid'])->getField('pid');
-                if ($pid == 0) {
-                    $return = array('code'=>1,'msg'=>'已是顶级分类');
-                }else{
-                    $res = M($model)->where('id='.$pid)->find();
-                    $return = array('code'=>0,'msg'=>'查询成功','info'=>$res);
-                }
-            }
-        }
-        return $return;
-    }
 
 }

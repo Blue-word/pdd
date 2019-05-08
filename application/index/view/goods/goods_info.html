@@ -13,11 +13,6 @@
     <link href="__PUBLIC__/static/css/plugins/iCheck/custom.css" rel="stylesheet">
     <!-- <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet"> -->
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
-    <!-- 百度地图 -->
-    <!-- <style type="text/css">
-    #container {width: 1230px;height: 380px;overflow: hidden;margin:0;font-family:"微软雅黑";}
-    </style>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=uzZhQDkARtTIbiTOydzupoQE7wQ4WkNn"></script> -->
     <!-- 图片上传 -->
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/static/plugins/fileinput/css/fileinput.min.css" />
     <!-- <link rel="stylesheet" type="text/css" href="__PUBLIC__/static/css/bootstrap.css" /> -->
@@ -55,102 +50,47 @@
                     <div class="ibox-content">
                         <form method="post" action="{:U('goods/goods_handle')}" class="form-horizontal m-t" id="signupForm">
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">商品名称</label>
+                                <label class="col-sm-2 control-label">商品标题</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="商品名称" name="title" id="title" class="form-control" required="" aria-required="true" value="{$info.title}">
+                                    <input type="text" placeholder="商品标题" name="title" id="title" class="form-control" required="" aria-required="true" value="{$info.title}">
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">商品详情</label>
+                                <label class="col-sm-2 control-label">商品链接</label>
                                 <div class="col-sm-10">
-                                    <input type="text" placeholder="请输入标题" name="content" class="form-control" required="" aria-required="true" value="{$info.content}">
+                                    <input type="text" placeholder="商品链接" name="link" class="form-control" required="" aria-required="true" value="{$info.link}">
+                                    例如：https://mobile.yangkeduo.com/order_checkout.html?sku_id=191729954997&group_id=16886516&goods_id=8441010
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">价格</label>
                                 <div class="col-sm-2">
-                                    <input name="price" max="9999" type="number" class="form-control" required="" aria-required="true" value="{$info.price}">
-                                    单位：元（¥）
+                                    <input name="amount" max="999999" type="number" class="form-control" required="" aria-required="true" value="{$info.amount}">
+                                    单位：元（¥），至多填写两位小数
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">点位选择</label>
-                                <div class="col-sm-2">
-                                    <select class="form-control selectpicker" data-live-search="true" name="area[]" required="" aria-required="true" multiple>
-                                        <foreach name="area" item="vo">
-                                            <optgroup label="{$vo.name}">
-                                                <foreach name="vo.point" item="fo">
-                                                    <option value="{$fo.id}">{$fo.name}</option>
-                                                </foreach>
-                                            </optgroup> 
-                                            <!-- <option value="{$vo.id}">{$vo.name}</option> -->
-                                        </foreach>     
-                                    </select>
+                                <label class="col-sm-2 control-label">备注</label>
+                                <div class="col-sm-8">
+                                    <input type="text" placeholder="请输入标题" name="remark" class="form-control" required="" aria-required="true" value="{$info.remark}">
                                 </div>
                             </div>
-                            
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">商品类别</label>
+                                <label class="col-sm-2 control-label">选择店铺</label>
                                 <div class="col-sm-2">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-first" name="firstValue" data-url="{:U('Goods/getSonCategory')}" data-live-search="true"  data-size="6">
-                                        <option value="">请选择分类</option>
-                                        <foreach name="category_first" item="vo">
+                                    <select class="form-control selectpicker show-tick reset" name="shop_id" data-live-search="true"  data-size="6">
+                                        <option value="">请选择店铺</option>
+                                        <foreach name="shop_list" item="vo">
                                             <option value="{$vo.id}">{$vo.name}</option>
                                         </foreach>
                                     </select>
                                 </div>
-                                <div class="col-sm-2" id="box-select-second" style="display:none;">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-second" name="sonCategoryId" data-url="{:U('Goods/getSonCategory')}" data-live-search="true"  data-size="6">
-                                        <!-- <option value="">请选择分类</option> -->
-                                        <!-- <foreach name="category_first" item="vo">
-                                            <option value="{$vo.id}">{$vo.name}</option>
-                                        </foreach> -->
-                                    </select>
-                                </div>
-                                <div class="col-sm-2" id="box-select-third" style="display:none;">
-                                    <select  class="form-control selectpicker show-tick reset" id="select-third" name="category" data-url="{:U('Goods/getSonCategory')}" data-live-search="true"  data-size="6" required="" aria-required="true">
-                                        <!-- <option value="">请选择分类</option> -->
-                                        <!-- <foreach name="category_first" item="vo">
-                                            <option value="{$vo.id}">{$vo.name}</option>
-                                        </foreach> -->
-                                    </select>
-                                </div>
                             </div>
                             <div class="hr-line-dashed"></div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">封面图片</label>
-                                <div class="col-sm-8">
-                                    <input id="cover" class="file" type="file" name="image[]" aria-required="false">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">商品轮播图片</label>
-                                <div class="col-sm-8">
-                                    <input id="album" class="file" type="file" name="image[]" aria-required="false" multiple>
-                                </div>
-                            </div>
-                            <!-- <div class="hr-line-dashed"></div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">上架日期范围：</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="开始日期" class="form-control layer-date" id="start" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$info.start_time}" required="" aria-required="true">
-                                    <input placeholder="结束日期" class="form-control layer-date" id="end" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$info.end_time}">
-                                </div>
-                            </div> -->
-                            <div class="hr-line-dashed"></div>
-                            <div id="hidden_val">
-                                <foreach name="pic_list" item="albumFo">
-                                    <input type="hidden" name="picture[]" value="{$albumFo}"/>
-                                </foreach>
-                                <foreach name="cover_list" item="albumFo">
-                                    <input type="hidden" name="cover_pic[]" value="{$albumFo}"/>
-                                </foreach>
-                            </div>
                             <div class="form-group">
                                 <div class="col-sm-4 col-sm-offset-2">
                                     <input type="hidden" name="act" value="{$act}">
@@ -324,218 +264,7 @@
         //     });
         // });
     </script>
-    <script>
-        var APP = "__APP__";
-        //展示图片
-        $("#album").fileinput({
-            language:'zh',//语言
-            showRemove:true,    //是否显示移除按钮
-            initialPreviewShowDelete:true,
-            resizeImage:true,   //调整图片
-            showUploadedThumbs:true,
-            uploadUrl:"__APP__/index/Uploadify/imgUp/rootpath/notice/savepath/picture/type/2",//上传地址
-            allowedFileExtensions : ['jpg', 'png','gif','jpeg'],//允许的文件后缀
-            maxFilesNum: 10,//最大文件上传数量
-            // deleteUrl:'__APP__/index/Uploadify/imageDelupload',//删除地址
-            //uploadAsync:false,//是否异步,默认true
-            enctype: 'multipart/form-data',
-            // overwriteInitial: false, //不覆盖已存在的图片
-            //deleteExtraData,  //删除图片时额外传入的参数,默认{}
-            initialPreviewAsData: true,
-            initialPreview: [       //初始化展示
-                <foreach name='pic_list' item='picInfo'>
-                "{$picInfo}",
-                </foreach>
-            ],
-            initialPreviewConfig: [        //预览图配置
-            <foreach name='pic_list' item='picInfo'>
-            { 
-                width: '213.33px', 
-                // url: '__APP__/index/Uploadify/imageDelupload', // server delete action 
-                showUpload:false, 
-                extra: {filename: "{$picInfo}"},
-                // previewAsData:false,
-                key:"{$picInfo}",
-            },
-            </foreach>
-            ],
-        }).on("fileuploaded",function(event,data,previewId,index){         //异步上传上传回调函数
-                var num = data.response['initialPreviewConfig'].length;
-                var str = "";
-                for(i=0;i<num;i++){
-                    var url = data.response['initialPreviewConfig'][i]['key'];
-                    str += "<input type='hidden' name='picture[]' value='"+url+"' id='"+previewId+"'/>";
-                    console.log(str)
-                }
-                $("#hidden_val").append(str);
-            // alert(data.response['initialPreviewConfig'][0]['key']);
-        }).on("filedeleted",function(event,key){          //删除回调函数
-            $("input[value='"+key+"']").remove();
-        });
-        $("#cover").fileinput({
-            language:'zh',//语言
-            showRemove:true,    //是否显示移除按钮
-            initialPreviewShowDelete:true,
-            resizeImage:true,   //调整图片
-            showUploadedThumbs:true,
-            uploadUrl:"__APP__/index/Uploadify/imgUp/rootpath/notice/savepath/picture/type/2",//上传地址
-            allowedFileExtensions : ['jpg', 'png','gif','jpeg'],//允许的文件后缀
-            maxFilesNum: 1,//最大文件上传数量
-            // deleteUrl:'__APP__/index/Uploadify/imageDelupload',//删除地址
-            //uploadAsync:false,//是否异步,默认true
-            enctype: 'multipart/form-data',
-            // overwriteInitial: false, //不覆盖已存在的图片
-            //deleteExtraData,  //删除图片时额外传入的参数,默认{}
-            dropZoneEnabled: false,     //是否显示拖拽区域
-            initialPreviewAsData: true,
-            initialPreview: [       //初始化展示
-                <foreach name='cover_list' item='picInfo'>
-                "{$picInfo}",
-                </foreach>
-            ],
-            initialPreviewConfig: [        //预览图配置
-            <foreach name='cover_list' item='picInfo'>
-            { 
-                width: '213.33px', 
-                // url: '__APP__/index/Uploadify/imageDelupload', // server delete action 
-                showUpload:false, 
-                extra: {filename: "{$picInfo}"},
-                // previewAsData:false,
-                key:"{$picInfo}",
-            },
-            </foreach>
-            ],
-        }).on("fileuploaded",function(event,data,previewId,index){         //异步上传上传回调函数
-                console.log(event)
-                console.log(data)
-                var num = data.response['initialPreviewConfig'].length;
-                var str = "";
-                for(i=0;i<num;i++){
-                    var url = data.response['initialPreviewConfig'][i]['key'];
-                    str += "<input type='hidden' name='cover_pic[]' value='"+url+"' id='"+previewId+"'/>";
-                    console.log(str)
-                }
-                $("#hidden_val").append(str);
-            // alert(data.response['initialPreviewConfig'][0]['key']);
-        }).on("filedeleted",function(event,key){          //删除回调函数
-            $("input[value='"+key+"']").remove();
-        });
-    </script>
-    <!-- <script type="text/javascript">
-        // 百度地图API功能
-        // var map = new BMap.Map("allmap");     
-        var map = new BMap.Map("container");
-        var point = new BMap.Point(118.802422,32.064653);
-        map.centerAndZoom(point,12);
 
-        //添加地图类型控件
-        var NavigationControl = {type: BMAP_NAVIGATION_CONTROL_ZOOM,offset: new BMap.Size(10, 10)}   //评议缩放控件类型
-        map.addControl(new BMap.NavigationControl(NavigationControl));   //平移缩放
-        map.addControl(new BMap.GeolocationControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT}));  //定位
-        map.addControl(new BMap.ScaleControl({offset: new BMap.Size(80, 25)}));    //比例尺 
-        map.addControl(new BMap.OverviewMapControl());  //缩略地图 
-        map.addControl(new BMap.MapTypeControl({        //地图类型
-            mapTypes:[
-                BMAP_NORMAL_MAP,
-                BMAP_HYBRID_MAP
-            ]}));     
-          
-        map.setCurrentCity("南京");          // 设置地图显示的城市 此项是必须设置的
-        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-
-        // 定义一个控件类，即function    
-        function ZoomControl() {
-            // 设置默认停靠位置和偏移量  
-            this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
-            this.defaultOffset = new BMap.Size(40, 10);
-        }
-        ZoomControl.prototype = new BMap.Control();
-        ZoomControl.prototype.initialize = function(map) {
-            // 创建一个DOM元素  
-            var div = document.createElement("div");
-            // 添加文字说明  
-            // var form = div.appendChild(document.createElement("form"));
-            var input0 = div.appendChild(document.createElement("input"));
-            input0.setAttribute("id", "suggestId");
-            input0.setAttribute("placeholder", "搜地点");
-            input0.style = "padding: 9px 0;border-left: 10px solid transparent;border-right: 27px solid transparent;line-height: 20px;font-size: 16px;height: 38px;color: #333;position: relative;border-radius: 2px 0 0 2px;";
-            var input1 = div.appendChild(document.createElement("div"));
-            input1.setAttribute("id", "searchResultPanel");
-            input1.style = "border:1px solid #C0C0C0;width:150px;height:auto; display:none;";
-            // 设置样式  
-            div.style.borderRight = "27px solid transparent";
-            map.getContainer().appendChild(div);
-            // 将DOM元素返回  
-            return div;
-        }
-        // 创建控件实例    
-        var myZoomCtrl = new ZoomControl();    
-        // 添加到地图当中    
-        map.addControl(myZoomCtrl);
-        //单击获取点击的经纬度
-        // map.addEventListener("click",function(e){
-        //  alert(e.point.lng + "," + e.point.lat);
-        // });
-
-        // 百度地图API功能
-        function G(id) {
-            return document.getElementById(id);
-        }
-        var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
-            {"input" : "suggestId"
-            ,"location" : map
-        });
-
-        ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
-        var str = "";
-            var _value = e.fromitem.value;
-            var value = "";
-            if (e.fromitem.index > -1) {
-                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-            }    
-            str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
-            
-            value = "";
-            if (e.toitem.index > -1) {
-                _value = e.toitem.value;
-                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-            }    
-            str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
-            G("searchResultPanel").innerHTML = str;
-        });
-
-        var myValue;
-        ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
-            var _value = e.item.value;
-            myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-            G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
-            setPlace();
-        });
-
-        function setPlace(){
-            map.clearOverlays();    //清除地图上所有覆盖物
-            function myFun(){
-                var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
-                map.centerAndZoom(pp, 18);
-                // var myIcon = new BMap.Icon("__PUBLIC__/static/img/position.png", new BMap.Size(34,32));   //创建新定位图标
-                // var marker = new BMap.Marker(pp,{icon:myIcon});  // 创建标注
-                var marker = new BMap.Marker(pp);  // 创建标注
-                map.addOverlay(marker);              // 将标注添加到地图中
-                marker.addEventListener("click",getAttr);  //鼠标点击获取经纬度
-                // marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
-                marker.enableDragging();           // 不可拖拽
-                function getAttr(){
-                    var p = marker.getPosition();       //获取marker的位置
-                    alert("当前位置是:" + "    " + p.lng + "," + p.lat);
-                    $('#coordinate').val(p.lng+','+p.lat);   
-                }
-            }
-            var local = new BMap.LocalSearch(map, { //智能搜索
-              onSearchComplete: myFun
-            });
-            local.search(myValue);
-        }
-    </script> -->
     <script>
         //日期范围限制
         var start = {

@@ -16,7 +16,7 @@ return [
     'hostname'        => '127.0.0.1',
     // 'hostname'        => '106.15.199.8',
     // 数据库名
-    'database'        => 'lyux',
+    'database'        => 'pdd',
     // 用户名
     'username'        => 'root',
     // 'username'        => 'llb',

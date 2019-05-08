@@ -8,9 +8,12 @@ use think\Paginator;
 
 class Goods extends Common{
 
+    private $status_where = ['status'=>1];
+
     public function _initialize(){
         parent::_initialize();  //关闭时不调用父类检验token
         $this->sex = C('SEX');
+        $this->status_where = $status_where;
     }
 
     public function position_set(){
@@ -20,124 +23,169 @@ class Goods extends Common{
     * 商品列表 
     **/
     public function goods_list(){
-        $list = M('goods')->where($where)->select();
-        if ($list) {
-            $list = M('goods')->order('id desc')->paginate(9);
-            foreach ($list as $key => $value) {
-                $list[$key]['category_name'] = M('category')->where('id',$value['id'])->getField('name');
-                $list[$key]['add_time'] = date('Y-m-d H:i',$value['add_time']);
-            }
-            $page = $list->render();
-            $this->assign('page', $page);
+        // var_dump(I('post.'));
+        if (I('post.shop_id')) {
+            $where['shop_id'] = I('post.shop_id');
         }
+        $where['status'] = 1;
+        $list = M('goods')->where($where)->select();
+        foreach ($list as $key => $value) {
+            $goods_ids[] = $value['goods_id'];
+        }
+        $sku_where['goods_id'] = ['in', array_unique($goods_ids)];
+        $sku_where['status'] = 1;
+        $goods_sku = M('goods_sku')->where($sku_where)->select();
+        foreach ($goods_sku as $key => $value) {
+            $goods_sku_list[$value['goods_id']][$key]['sku_id'] = $value['sku_id'];
+            $goods_sku_list[$value['goods_id']][$key]['amount'] = $value['amount'];
+        }
+        // var_dump($goods_sku_list);
+        $shop = M('shop')->where(['status'=>1])->getField('id,name');   //店铺
+        foreach ($list as $key => $value) {
+            $sku_str = '';
+            if ($goods_sku_list[$value['goods_id']]) {
+                foreach ($goods_sku_list[$value['goods_id']] as $k => $v) {
+                    $sku_str .= $v['sku_id'].' / ￥'.$v['amount'].'<br>';
+                }
+            }
+            $list[$key]['sku'] = $sku_str;
+            $list[$key]['shop'] = $shop[$value['shop_id']];
+            $list[$key]['time'] = date('Y-m-d H:i', $value['time']);
+        }
+        $shop_list = M('shop')->where(['status'=>1])->select();
+        $this->assign('shop_list',$shop_list);
         $this->assign('list',$list);
         return $this->fetch();
     }
 
     public function goods_info(){
-        $id = input('id');
-        if($id){
-            $info = M('goods')->where('id',$id)->find();
-            // $info['start_time'] = date('Y-m-d H:i:s',$info['start_time']);
-            // $info['end_time'] = date('Y-m-d H:i:s',$info['end_time']);
-            $picture = explode(',',$info['picture']);
-            $cover_pic = explode(',',$info['cover_pic']);
-            //分类选中
-            $category_info = $this->getCategoryInfo($info['category']);
-            $this->assign('info',$info);
-            $this->assign('category_info',$category_info);
-        }
-        $category_where['level'] = 1;
-        $category_where['is_delete'] = 0;
-        $category_first = M('category')->where($category_where)->select();
+        $shop_list = M('shop')->where(['status'=>1])->select();
         $act = empty($id) ? 'add' : 'edit';
-        //地区——点位
-        $area = M('area')->where('status',1)->select();
-        foreach ($area as $key => $value) {
-            $point_where['area'] = $value['id'];
-            $point_where['status'] = 1;
-            $point_info = M('point')->where($point_where)->select();
-            if ($point_info) {
-                $area[$key]['point'] = $point_info;
-            }else{
-                $area[$key]['point'] = array();
-            }
-            // dump($point_info);
-        }
-        // dump($category_info);
-        // dump($area);
         $this->assign('act',$act);
-        $this->assign('pic_list',$picture);
-        $this->assign('cover_list',$cover_pic);
-        $this->assign('area',$area);
-        $this->assign('category_first',$category_first);
+        $this->assign('shop_list',$shop_list);
         return $this->fetch();
     }
 
     public function goods_handle(){
-        $data = input('post.');
-        $model = model('Goods');
-        // dump($data);die;
-        // $data['picture'] = $data['image'];
+        $data = I('post.');
+        $amount = $data['amount'];
+        if ($data['link']) {
+            $goods_url = 'https://mobile.yangkeduo.com/goods.html?goods_id=';   //拼多多商品查看url
+            $url_query = parse_url($data['link']);  //解析链接的参数
+            parse_str($url_query['query'], $url_param);
+        }
+        // var_dump($data);die;
+        $where['id'] = $data['id'];
         if($data['act'] == 'add'){
-            unset($data['id'],$data['image']);           
-            $data['add_time'] = time();
-            // $data['start_time'] = strtotime($data['start_time']);
-            // $data['end_time'] = strtotime($data['end_time']);
-            // $data['uid']  = Session::get('uid');
-            if ($data['picture']) {
-                $data['picture'] = implode(',',$data['picture']);
-            }
-            if ($data['cover_pic']) {
-                $data['cover_pic'] = implode(',',$data['cover_pic']);
-            }
-            $data['area'] = implode(',',$data['area']);
-            // dump($data);
-            $res = $model->allowField(true)->save($data);
-        }
-        
-        if($data['act'] == 'edit'){
             $data['time'] = time();
-            // $data['start_time'] = strtotime($data['start_time']);
-            // $data['end_time'] = strtotime($data['end_time']);
-            $data['picture'] = implode(',',$data['picture']);
-            // dump($data);
-            $res = $model->allowField(true)->save($data,['id' => $data['id']]);
-            // dump($model->getLastsql());
-            // dump($res);
+            $data['goods_id'] = $url_param['goods_id'];
+            $data['link'] = $goods_url.$url_param['goods_id'];  //拼接商品信息URL,该链接可查看商品信息
+            unset($data['amount'], $data['act']);
+            $res = M('Goods')->data($data)->add();
         }
-        
-        // if($data['act'] == 'del'){
-        //     $res = D('new_course')->where('id', $data['id'])->save(['del_status'=>1]);
-        //     exit(json_encode($data));
-        // }
+        // die;
+        if($data['act'] == 'edit'){
+            $goods_info = M('goods')->where($where)->find();
+            if ($url_param['goods_id'] != $goods_info['goods_id']) {
+                $this->error("链接中的goods_id不能修改",U('index/goods/goods_info',array('id'=>$data['id'])));
+            }
+            $data['link'] = $goods_url.$url_param['goods_id'];  //拼接商品信息URL,该链接可查看商品信息
+            unset($data['amount'], $data['act']);
+            $res = M('goods')->where($where)->save($data);
+        }
 
-        if($data['act'] == 'audit' || $data['act'] == 'ajax'){
-            // $audit_uid = Session::get('uid');
-            $res = $model->where('id', $data['id'])->save(['status'=>$data['status']]);
+        if($data['act'] == 'ajax'){
+            // var_dump(I)
+            $res = M('goods')->where($where)->save(['status'=>$data['status']]);
             exit(json_encode($res));
-            // dump($res);
         }
         
         if($res){
+            // 写入商品sku表
+            $sku = [
+                'sku_id'   => $url_param['sku_id'],
+                'goods_id' => $url_param['goods_id'],
+                'group_id' => $url_param['group_id'],
+                'amount'   => substr(sprintf("%.3f", $amount), 0, -1)
+            ];
+            M('goods_sku')->data($sku)->add();
             $this->success("操作成功",U('index/goods/goods_list'));
         }else{
             $this->error("操作失败",U('index/goods/goods_info',array('id'=>$data['id'])));
         }
     }
 
-    public function goods_view(){
-        $id = input('id');
-        if($id){
-            $info = M('goods')->where('id',$id)->find();
-            // $info['start_time'] = date('Y-m-d H:i:s',$info['start_time']);
-            // $info['end_time'] = date('Y-m-d H:i:s',$info['end_time']);
-            // $info['admin_name'] = M('admin')->where('uid',$info['uid'])->getField('name');
-            // $info['audit_name'] = M('admin')->where('uid',$info['audit_uid'])->getField('name');
-            $this->assign('info',$info);
-        }
-        // dump($info);
+    public function goods_sku_info(){
+        $goods = M('goods')->where(['id'=>I('post.id')])->find();
+        $where['goods_id'] = $goods['goods_id'];
+        $where['status'] = 1;
+        $goods_sku = M('goods_sku')->where($where)->select();
+        $this->assign('goods',$goods);
+        $this->assign('goods_sku',$goods_sku);
         return $this->fetch();
+    }
+
+    public function goods_sku_handle()
+    {
+        $data = I('post.');
+        if($data['act'] == 'ajax'){
+            $res = M('goods_sku')->where(['id'=>$data['id']])->save(['status'=>$data['status']]);
+            exit(json_encode($res));
+        }
+        if ($data['act'] == 'edit') {
+            foreach ($data['sku_id'] as $key => $value) {
+                $amount = substr(sprintf("%.3f", $data['amount'][$key]), 0, -1);
+                $res = M('goods_sku')->where(['id'=>$value])->save(['amount'=>$amount]);
+            }
+        }
+        if($res){
+            $this->success("操作成功",U('index/goods/goods_sku_info',array('id'=>$data['id'])));
+        }else{
+            $this->error("操作失败",U('index/goods/goods_sku_info',array('id'=>$data['id'])));
+        }
+    }
+
+    public function buyer_group_info(){
+        $data = I('post.');
+        if ($data['id']) {
+            $where['group'] = $data['id'];
+        } else {
+            $where['group'] = 0;
+        }
+        $where['status'] = 1;
+        $user = M('buyer')->where($where)->getField('id,account');
+        // var_dump($where);
+        $buyer_group = M('buyer_group')->where($this->status_where)->getField('id,name');
+        $this->assign('user',$user);
+        $this->assign('buyer_group',$buyer_group);
+        $this->assign('id',$data['id']);
+        return $this->fetch();
+    }
+
+    public function buyer_group_handle()
+    {
+        $data = I('post.');
+        var_dump($data);
+        if($data['id']){
+            $buyer_group = M('buyer_group')->where(['id'=>$data['id']])->find();
+            // 找出被取消的用户
+            $buyer_list = M('buyer')->where(['group'=>$data['id']])->getField('id' ,true);
+            $buyer_diff = array_diff($buyer_list, $data['user']);
+            foreach ($buyer_diff as $key => $value) {
+                // 取消的用户的分组被重置为0
+                $res = M('buyer')->where(['id'=>$value])->save(['group'=>0]);
+            }
+        } else {
+            foreach ($data['user'] as $key => $value) {
+                // 变更用户分组
+                $res = M('buyer')->where(['id'=>$value])->save(['group'=>$data['group_id']]);
+            }
+        }
+        if($res){
+            $this->success("操作成功",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
+        }else{
+            $this->error("操作失败",U('index/goods/buyer_group_info',array('id'=>$data['id'])));
+        }
     }
 
     public function weixin_info(){
@@ -540,6 +588,12 @@ class Goods extends Common{
         }else{
             $this->error("操作失败",U('index/goods/point_info',array('id'=>$data['id'])));
         }
+    }
+
+    public function test01($value='')
+    {
+        $url = 'http://mobile.yangkeduo.com/proxy/api/api/galen/v2/regions/1';
+        $res = httpPost($url,[]);
     }
 
     
