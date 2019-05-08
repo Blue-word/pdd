@@ -2,5 +2,4 @@
 composer.lock
 *.log
 runtime
-thinkphp
 public/upload
