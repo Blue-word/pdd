@@ -156,7 +156,6 @@ class Admin extends Base{
         }
         //权限组
         $group = array('goods'=>'商品管理','xuanhui'=>'选惠管理','activity'=>'活动管理','permission'=>'权限管理');
-        // dump($modules);
         $this->assign('group',$group);
         $this->assign('modules',$modules);
         return $this->fetch();
@@ -218,7 +217,7 @@ class Admin extends Base{
             $info['right'] = explode(',', $info['right']);
             $this->assign('info',$info);
         }
-        $group = array('goods'=>'商品管理','xuanhui'=>'选惠管理','activity'=>'活动管理','permission'=>'权限管理');
+        $group = array('goods'=>'商品管理','buyer'=>'买家管理','buyer_group'=>'买家分组管理','shop'=>'商家管理','permission'=>'权限管理');
         $planPath = APP_PATH.'index/controller';
         $planList = array();
         $dirRes = opendir($planPath);
