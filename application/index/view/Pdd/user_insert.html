@@ -181,17 +181,14 @@
                         if(res.code == '2') {
                             alert('AccessToken 已失效');return;
                         }
-                        console.log(res)
                         //遍历回传的数据添加到二级select
                         $.each(res.result.regions, function(key, secondData) {
                             var option = '<option value="'+secondData.region_id+'">'+secondData.region_name+'</option>';
-                            console.log(option)
                             $("#select-first").append(option);
                                
                         })
-                        console.log($("#select-first"))
                         //bootstap-select控件:需刷新对应select                           
-                        // $("#select-second").selectpicker('refresh');
+                        $("#select-first").selectpicker('refresh');
                         //二级select展示
                         $("#box-select-second").fadeIn("slow");
                         //三级select隐藏
@@ -252,7 +249,7 @@
                                
                         })
                         //bootstap-select控件:需刷新对应select                           
-                        // $("#select-second").selectpicker('refresh');
+                        $("#select-second").selectpicker('refresh');
                         //二级select展示
                         $("#box-select-second").fadeIn("slow");
                         //三级select隐藏
@@ -296,7 +293,7 @@
                             $("#select-third").append(option); 
                         })
                         //bootstap-select控件:需刷新对应select                           
-                        // $("#select-third").selectpicker('refresh');
+                        $("#select-third").selectpicker('refresh');
                          //三级select显示出来
                         $("#box-select-third").fadeIn("slow");                                                 
                     },

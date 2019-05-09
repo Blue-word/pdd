@@ -238,26 +238,55 @@ class Auth
         $goods_ids = M('goods')->where(['shop_id'=>$group['shop_id']])->getField('goods_id',true);
         $info = $model->where(['amount'=>$price])->where(['goods_id'=>['in',$goods_ids]])->find();
         $num = 1;
+
         if($info == null) {
-            $remainder = $price % 1000;
-            if($remainder > 0) {
-                // 有余数使用500取余
-                $remainder = $price % 500;
-                if($remainder > 0 ) {
-                    return false;
-                } else {
-                    $num = $price / 500;
-                    $info = $model->where(['amount'=>500])->find();
+            $price_arr = [2500,2000,1000,500];
+            foreach ($$price_arr as $key => $value) {
+                $remainder = $price % $value;
+                if($remainder == 0) {
+                    $info = $model->where(['amount'=>$value])->find();
+                    $num = $price / $value;
+                    break;
                 }
-            } else {
-                    $num = $price / 1000;
-                    $info = $model->where(['amount'=>1000])->find();
             }
         }
-        
-        if($info == null) {
+
+        if( !isset($info) || $info == null) {
             return false;
         }
+
+        // if($info == null) {
+        //     $remainder = $price % 2500;
+        //     if($remainder > 0) {
+        //         $remainder = $pirce % 2000;
+        //         if($remainder > 0) {
+        //             $remainder = $price % 1000;
+        //             if($remainder > 0) {
+        //                 // 有余数使用500取余
+        //                 $remainder = $price % 500;
+        //                 if($remainder > 0 ) {
+        //                     return false;
+        //                 } else {
+        //                     $num = $price / 500;
+        //                     $info = $model->where(['amount'=>500])->find();
+        //                 }
+        //             } else {
+        //                     $num = $price / 1000;
+        //                     $info = $model->where(['amount'=>1000])->find();
+        //             }
+        //         } else {
+        //             $num = $price / 2000;
+        //             $info = $model->where(['amount'=>2000])->find();    
+        //         }
+        //     }else {
+        //         $num = $price / 2500;
+        //         $info = $model->where(['amount'=>2500])->find();
+        //     }
+        // }
+        
+        // if($info == null) {
+        //     return false;
+        // }
 
         return compact('num','info');
     }
