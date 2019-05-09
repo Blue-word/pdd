@@ -132,7 +132,7 @@ class Auth
                 ]);
             return json_encode([
                 'code' => '401',
-                'msg'  => '用户异常创建订单!',
+                'msg'  => '用户创建订单失败!',
             ]);
         }
         // 获取order支付地址
@@ -140,15 +140,23 @@ class Auth
         $app_id = 9;
         $pay_path = $this->prepay($order['order_sn'],$app_id,$user['access_token']); // 获取支付信息
 
-        $result = json_decode($json,true);
+        $result = json_decode($pay_path,true);
+        if(isset($result['error_code'])) {
+            return json_encode([
+                'code' => '401',
+                'msg'  => '用户获取支付信息失败!',
+            ]);
+        }
         $url = http_build_query($result['query']);
         // direct($result['gateway_url'] . '?' .$url);
         $url = $result['gateway_url'] . '?' .$url;
-        return json_encode([
+        $res = [
             'code'  => '200',
             'result' => $result,
             'url'    => $url
-        ]);
+        ];
+        // halt($res);die;
+        return json_encode($res);
     }
 
     // 获取当前请求执行用户
@@ -156,9 +164,9 @@ class Auth
     {
         $model = M('config');
         // 查询目前轮次分组
-        $info = $model->where('name','group')->find();
+        $info = $model->where(['name'=>'group'])->find();
         if($info == null) { // 第一次轮询没有轮次 需创建
-            $group = db('buyer_group')->where('status','1')->find();
+            $group = db('buyer_group')->where(['status'=>'1'])->find();
             if($group == null) {
                 return false;
             }
@@ -176,9 +184,9 @@ class Auth
         // 判断目标金额是否大于实际金额
         if(($info['info'] > $info['cate']))  { 
             // 找出同组下一位执行用户
-            $last_user = $model->where('name','last_user')->find(); 
+            $last_user = $model->where(['name'=>'last_user'])->find(); 
             if($last_user == null) {
-                $user = db('buyer')->where('status','1')->where('group',$info['value'])->find();
+                $user = db('buyer')->where(['status'=>'1'])->where(['group'=>$info['value']])->find();
                 $model->insert([
                     'name'  => 'last_user',
                     'value' => $user['id'],
@@ -190,8 +198,8 @@ class Auth
 
         } else {
             // 找出下一组。替换 config 表
-            $group = db('buyer_group')->where('id','>',$info['value'])->where('status','1')->find();
-            $model->where('name','group')->save([
+            $group = db('buyer_group')->where(['id'=>['>',$info['value']]])->where(['status'=>'1'])->find();
+            $model->where(['name'=>'group'])->save([
                 'value' => $group['id'],
                 'info'  => $group['aim_amount'],
                 'cate'  => 0,
@@ -200,20 +208,20 @@ class Auth
         }
         // 查询出满足条件的用户
         if(!isset($user)) {
-            $user = db('buyer')->where($where)->where('status','1')->find();
+            $user = db('buyer')->where($where)->where(['status'=>'1'])->find();
         }
 
         // halt($user);
         if($user == null && isset($where['id'])) {
             unset($where['id']);
-            $user = db('buyer')->where($where)->where('status','1')->order('id asc')->find();
+            $user = db('buyer')->where($where)->where(['status'=>'1'])->order('id asc')->find();
         } 
 
         if($user == null) {
             return false;
         } else {
             if($last_user['value'] != $user['id']) {
-                $model->where('name','last_user')->save(['value'=>$user['id']]);
+                $model->where(['name'=>'last_user'])->save(['value'=>$user['id']]);
             }
             return [
                 'user' => $user,
@@ -226,9 +234,9 @@ class Auth
     public function getStore($price,$group_id)
     {
         $model = M('goods_sku');
-        $group = M('buyer_group')->where('id',$group_id)->find();
-        $goods_ids = M('goods')->where('shop_id',$group['shop_id'])->getField('goods_id',true);
-        $info = $model->where('amount',$price)->where('goods_id','in',$goods_ids)->find();
+        $group = M('buyer_group')->where(['id'=>$group_id])->find();
+        $goods_ids = M('goods')->where(['shop_id'=>$group['shop_id']])->getField('goods_id',true);
+        $info = $model->where(['amount'=>$price])->where(['goods_id'=>['in',$goods_ids]])->find();
         $num = 1;
         if($info == null) {
             $remainder = $price % 1000;
@@ -239,11 +247,11 @@ class Auth
                     return false;
                 } else {
                     $num = $price / 500;
-                    $info = $model->where('amount',500)->find();
+                    $info = $model->where(['amount'=>500])->find();
                 }
             } else {
                     $num = $price / 1000;
-                    $info = $model->where('amount',1000)->find();
+                    $info = $model->where(['amount'=>1000])->find();
             }
         }
         
