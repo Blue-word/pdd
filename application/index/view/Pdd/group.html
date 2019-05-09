@@ -39,6 +39,16 @@
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">批量分配买家</i>
                                         </button>
                                     </a>
+
+                                </div>
+                                <div>
+                                    
+                                     <if condition="$is_received gt 0 ">
+                                      <button class="btn btn-primary btn-sm" onclick="received({$is_received})">待确认收货订单({$is_received})</button>
+                                     <else>
+                                         <button class="btn btn-default btn-sm" disabled="disabled">暂无待收货订单</button>
+                                     </if>
+                                     
                                 </div>
                                 <table id="exampleTableEvents" data-height="465" data-mobile-responsive="true">
                                     <thead>
@@ -120,7 +130,7 @@
                 $('#exampleTableEvents').on('click', '.demo4', function (event) {
                 swal(
                     {
-                        title: "您确定要开启此店铺吗",
+                        title: "您确定要开启此分组吗",
                         text: "",
                         type: "warning",
                         showCancelButton: true,
@@ -184,7 +194,7 @@
                                 data: {id: id,act: 'ajax',status: 0},
                                 success: function(index){
                                     console.log(index);
-                                    $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo4" value="${id}">审核</button>`));
+                                    $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo4" value="${id}">启用</button>`));
                                     $span.replaceWith('<span class="label label-default label2">已关闭</span>');
                                     swal("关闭成功！", "您已经关闭此分组。", "success");
                                 },
@@ -199,6 +209,48 @@
                     }
                 );
             });
+
+
+        function received(num)
+        {
+            // alert('一键收获');
+          swal(
+                    {
+                        title: "您确定要批量确认收货吗?",
+                        text: "待确认收货数量"+num,
+                        type: "warning",
+                        showCancelButton: true,
+                        showRollButton: true,
+                        confirmButtonColor: "#1ab394",
+                        confirmButtonText: "批量确认收货",
+                        cancelButtonText: "暂时不确认",
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        allowOutsideClick: true,
+                    }, 
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                type: 'POST',
+                                url: "{:U('pdd/batchReceiving')}",
+                                dataType: 'json',
+                                success: function(index){
+                                    if(index == false) {
+                                        swal("确认收货失败！", "确认收货失败！", "error");return;
+                                    }
+                                    var num = index.data.num;
+                                    swal("确认收获成功！", "成功收货"+num+'件订单', "success");
+                                },
+                                error:function(index) {
+                                    swal("确认收货失败！", "确认收货失败！", "error");
+                                },
+                            });
+                        } else {
+                            swal("已取消", "展示不确认收货！", "error");
+                        }
+                    }
+                );
+        }
     </script>
 
 </body>

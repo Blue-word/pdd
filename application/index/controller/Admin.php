@@ -11,32 +11,35 @@ use think\Loader;
 class Admin extends Base{
 
     public function login(){   //登录
+        if(session('?uid') && session('uid')>0){
+            // dump(session('uid'));
+             $this->error("您已登录",U('index/index/index'));
+        }
         if(request()->isPost()){
-            $data = I('post.');
-            $validate = Loader::validate('Admin');
-            if(!$validate->check($data)){
-                $this->error("请勿重复提交");
-            }
-            if(session('?uid') && session('uid')>0){
-                $this->error("您已登录",U('index/index/index'));
-            }
-            $logic_model = model('AdminLogic','logic');
-            $logic_login = $logic_model->login($data);
-            if (!$logic_login['code']) {
-                $admin_info = $logic_login['info'];
-                if ($admin_info['delete_status'] == 0) {  //账号被高级别管理员停用
-                    $this->error("您的管理员账号已被停用，请联系上级管理员",U('index/admin/login'));
+            $condition['name'] = I('post.name/s');
+            $condition['password'] = I('post.password/s');
+            if(!empty($condition['name']) && !empty($condition['password'])){
+                $condition['password'] = encrypt($condition['password']);
+                $admin_info = Db::table('admin')->alias('a')->join('admin_role b','a.role_id = b.role_id','INNER')->where($condition)->find();
+                if($admin_info){
+                    if ($admin_info['delete_status'] == 0) {  //账号被高级别管理员停用
+                        $this->error("您的管理员账号已被停用，请联系上级管理员",U('index/admin/login'));
+                    }
+
+                    session('uid',$admin_info['uid']);
+                    session('role_id',$admin_info['role_id']);
+                    session('role_name',$admin_info['role_name']);
+                    session('admin_name',$admin_info['name']);
+                    session('act_list',$admin_info['act_list']);
+
+                    // M('admin')->where('uid',$admin_info['uid'])->save(array('last_login'=>time(),'last_ip'=>getIP()));
+                    adminLog($admin_info['name']."登录");
+                    $this->success("登陆成功",U('index/index/index'));
+                }else{
+                    $this->error("用户名或密码不正确");
                 }
-                session('uid',$admin_info['uid']);
-                session('role_id',$admin_info['role_id']);
-                session('role_name',$admin_info['role_name']);
-                session('admin_name',$admin_info['name']);
-                session('act_list',$admin_info['act_list']);
-                M('admin')->where('uid',$admin_info['admin_uid'])->save(array('last_login'=>time(),'last_ip'=>getIP()));
-                adminLog($admin_info['name']."登录");
-                $this->success("登陆成功",U('index/index/index'));
             }else{
-                $this->error($logic_login['msg'],U('index/admin/login'));
+                $this->error("用户名或密码不能为空",U('index/admin/login'));
             }
         }
         return $this->fetch();

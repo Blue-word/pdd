@@ -3,7 +3,7 @@ namespace app\index\controller;
 use think\Controller;
 use fast\Http;
 
-class Pdd extends Controller{
+class Pdd extends Base{
 
 	public function shop_list()
 	{
@@ -196,11 +196,12 @@ class Pdd extends Controller{
     public function group()
     {
     	$model = M('buyer_group');
-
     	$list = $model->select();
         $result = M('config')->where('name','group')->getField('value');
         $this->assign('value',$result);
     	$this->assign('list',$list);
+        $is_received = M('order')->where(['status'=>['gt',0],'received_time'=>'0'])->count('id');
+        $this->assign('is_received',$is_received); 
     	return $this->fetch();
     }
 
@@ -294,6 +295,51 @@ class Pdd extends Controller{
         }else{
             $this->error("操作失败",U('index/pdd/buyer_group_info',array('id'=>$data['id'])));
         }
+    }
+
+    public function receivingGoods($uid,$order_sn,$access_token)
+    {
+        $url = 'http://apiv3.yangkeduo.com/order/'.$order_sn.'/received';
+        $access_token = 'MBA7UHBS6OBH6OCHRCLUDIROOSCVRSNLBNNLIO2EBNNEJVENVI7A100168a';
+        $result = Http::get($url,'','',$access_token);
+        $result_array = json_decode($result,true);
+        $model = M('order');
+        if(!isset($result_array['error_code']) && isset($result_array['server_time'])) {
+            $model->where(['order_sn'=>$order_sn])->save([
+                'received_time' => $result_array['server_time']
+            ]);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    // 批量收货
+    public function batchReceiving()
+    {
+        $buyer = M('buyer');
+        // 找出该组用户列表
+        $order = M('order');
+        // 获取已付款的订单 还需判断是否已确认收货
+        $order_list = $order->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->select();
+        // 提取订单列表满足条件的uid
+        if(empty($order_list)) {
+            return false;
+        } 
+        // $uids = ['2','4','5','6'];
+        $uids = array_column($order_list, 'uid');
+        $user_list = $buyer->where(['id'=>['in',$uids]])->getField('id,access_token',true);
+        foreach ($order_list as $key => $value) {
+            $result = $this->receivingGoods($value['uid'],$value['order_sn'],$user_list[$value['uid']]);
+            if($result == true) $num ++;
+        }
+
+        return json_encode([
+            'code' => '200',
+            'msg'  => '执行成功!',
+            'num'  => $num,
+        ]);
     }
 
 }

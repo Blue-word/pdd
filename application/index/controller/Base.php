@@ -25,18 +25,18 @@ class Base extends Controller {
     public function _initialize() 
     {
         // 过滤不需要登陆的行为
-        // if(in_array(ACTION_NAME,array('login','logout'))){
-        // 	//return;
-        // }else{
-        // 	if(session('uid') > 0 ){
-        //         // $asd = $this->check_priv();//检查管理员菜单操作权限
-        // 		$son_uid = $this->son_uid();//查询子管理员
-        //         // dump($son_uid);
-        // 	}else{
-        // 		$this->error('请先登录',U('index/admin/login'),1);
-        // 	}
-        // }
-        // $this->public_assign();
+        if(in_array(ACTION_NAME,array('login','logout'))){
+        	//return;
+        }else{
+        	if(session('uid') > 0 ){
+                // $asd = $this->check_priv();//检查管理员菜单操作权限
+        		$son_uid = $this->son_uid();//查询子管理员
+                // dump($son_uid);
+        	}else{
+        		$this->error('请先登录',U('index/admin/login'),1);
+        	}
+        }
+        $this->public_assign();
     }
     
     /**
