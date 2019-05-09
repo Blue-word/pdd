@@ -96,6 +96,12 @@ class Pdd extends Controller{
         
     }
 
+    public function delAddress($id,$access_token)
+    {
+        $url = 'https://mobile.yangkeduo.com/proxy/api/api/origenes/address/delete/'.$id;
+        $result = Http::POST($url,'',[],$access_token);
+    }
+
     public function user_add()
     {
     	$Model_Data = M('buyer');
@@ -140,10 +146,13 @@ class Pdd extends Controller{
     {
     	$Model_Data = M('buyer');
 	    $post = I('post.');
+        $old_address_id = $Model_Data->where('id',$post['id'])->getField('address_id');
 	    $address_id = $this->addAddress($post);
 	    if($address_id == false) {
 			$this->error('生成拼多多收货地址失败!');
-		}
+		} elseif(!empty($old_address_id)) {
+            $this->delAddress($old_address_id,$post['access_token']);
+        }
 		$post['address_id'] = $address_id;
     	if($Model_Data->where('id',$post['id'])->save($post)){
         	$this->success('编辑成功!',U('user'));
