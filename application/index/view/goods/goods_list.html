@@ -11,6 +11,15 @@
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+        <style type="text/css">
+        .clearfix,.pagination-detail,.pagination-outline{
+            display: none;
+        }
+        .pagination-info {
+            line-height: 34px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 
 <body class="gray-bg">
@@ -118,7 +127,10 @@
                                         </foreach>
                                     </tbody>
                                 </table>
-                                <div style="float: right;margin-right: 100px;">
+                               <div style="float: left; line-height: 70px;">
+                                    <span class="pagination-info">显示第 1 到第 25 条记录，总共 {$total} 条记录</span>
+                                </div>
+                                <div style="float: right;">
                                     {$page}
                                 </div>
                             </div>

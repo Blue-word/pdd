@@ -15,90 +15,104 @@ class Order extends Base
 		$where_list = [];
 		$shop_id = I('shop_id','');
 		if ($shop_id) {
-            $where['shop_id'] = $shop_id;
+            $where['o.shop_id'] = $shop_id;
             $where_list['o.shop_id'] = $shop_id;
         }
         $pay_memberid = I('pay_memberid','');
 		if ($pay_memberid) {
-            $where['pay_memberid'] = $pay_memberid;
+            $where['o.pay_memberid'] = $pay_memberid;
             $where_list['o.pay_memberid'] = $pay_memberid;
         }
         $pay_orderid = I('pay_orderid','');
 		if ($pay_orderid) {
-            $where['pay_orderid'] = $pay_orderid;
+            $where['o.pay_orderid'] = $pay_orderid;
             $where_list['o.pay_orderid'] = $pay_orderid;
         }
         $out_trade_no = I('out_trade_no','');
 		if ($out_trade_no) {
-            $where['out_trade_no'] = $out_trade_no;
+            $where['o.out_trade_no'] = $out_trade_no;
             $where_list['o.out_trade_no'] = $out_trade_no;
         }
         $order_sn = I('order_sn','');
 		if ($order_sn) {
-            $where['order_sn'] = $order_sn;
+            $where['o.order_sn'] = $order_sn;
             $where_list['o.order_sn'] = $order_sn;
         }
-        $status = I('status','');
-        $curZfType = -1;
-		if ($status) {
-			switch ($status){
-		        case "0":
-		            //未支付
-		            $where['status'] = 0;
-		            $where_list['o.status'] = 0;
-		            $curZfType = 0;
-		            break;
-		        case "1,2":
-		            //成功订单
-		        	$where['status'] = 1;
-		            $where_list['o.status'] = ['in','1,2'];
-		            $curZfType = 3;
-		            break;
-		        case "1":
-		            //支付未回调
-		            $where['status'] = 1;
-		            $where_list['o.status'] = 1;
-		            $curZfType = 1;
-		            break;
-		        case "2":
-		            //支付已回调
-		            $where['status'] = 2;
-		            $where_list['o.status'] = 2;
-		            $curZfType = 2;
-		            break;
-		        default:
-		            //查询所有订单状态
-		            break;
-		    }
+        $account_phone = I('account_phone','');
+        if ($account_phone) {
+            $where['b.account'] = $account_phone;
+            $where_list['b.account'] = $account_phone;
         }
+        $status = I('status','-1');
+        $curZfType = -1;
+		switch ($status){
+	        case "0":
+	            //未支付
+	            $where['o.status'] = 0;
+	            $where_list['o.status'] = 0;
+	            $curZfType = 0;
+	            break;
+	        case "1,2":
+	            //成功订单
+	        	$where['o.status'] = ['in','1,2'];
+	            $where_list['o.status'] = ['in','1,2'];
+	            $curZfType = 3;
+	            break;
+	        case "1":
+	            //支付未回调
+	            $where['o.status'] = 1;
+	            $where_list['o.status'] = 1;
+	            $curZfType = 1;
+	            break;
+	        case "2":
+	            //支付已回调
+	            $where['o.status'] = 2;
+	            $where_list['o.status'] = 2;
+	            $curZfType = 2;
+	            break;
+	        default:
+	            //查询所有订单状态
+	            break;
+	    }
         
         $start_datetime = I('start_datetime', '');
         $end_datetime = I('end_datetime', '');
         if( ($start_datetime && !strpos($start_datetime, "ed"))  && ($end_datetime && !strpos($end_datetime, "ed"))  ) {
-    		$where['order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
+    		$where['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
     		$where_list['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
 		}else{
+            // $start_datetime = "";
+            // $end_datetime = "";
 			$start_datetime = date('Y-m-d')." 00:00:00";
         	$end_datetime = date('Y-m-d')." 23:59:59";
-        	// $where['order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
-        	// $where_list['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
+        	$where['order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
+        	$where_list['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
 		}
  		$order = M('Order');
  		$shop = M('shop');
         $list = $order
         			->alias('o')
-        			->field("o.id,o.shop_id,o.pay_memberid,o.pay_orderid,o.out_trade_no,o.pay_productname,o.order_amount,o.pay_poundage,o.pay_actualamount,o.order_time,o.pay_time,o.status,s.name as shop_name")
+        			->field("o.id,o.shop_id,o.order_sn,o.pay_memberid,o.pay_orderid,o.out_trade_no,o.pay_productname,o.order_amount,o.pay_poundage,o.pay_actualamount,o.order_time,o.pay_time,o.status,o.received_time,s.name as shop_name,b.account as account_phone")
         			->join('shop s','o.shop_id = s.id')
+                    ->join('buyer b','o.uid = b.id')
         			->where($where_list)
         			->order('o.id desc')
         			->paginate(15);
         // 店铺
         $shop_list = $shop->select();
         // 计算所有订单的总值
-        $order_total = $order->where($where)->field('count(*)as total_order,sum(order_amount)as total_amount,sum(pay_poundage)as total_poundage,sum(pay_actualamount)as total_actualamount')->find();
-
-        $where['status'] = ['in','1,2'];
-        $successOrderCount = $order->where($where)->count();
+        $order_total = $order
+                            ->alias('o')
+                            ->field('count(o.id)as total_order,sum(o.order_amount)as total_amount,sum(o.pay_poundage)as total_poundage,sum(o.pay_actualamount)as total_actualamount')
+                            ->join('buyer b','o.uid = b.id')
+                            ->where($where)
+                            ->find();
+        $where['o.status'] = ['in','1,2'];
+        $successOrderCount = $order
+                                ->alias('o')
+                                ->where($where)
+                                ->join('buyer b','o.uid = b.id')
+                                ->count('o.id');
         // 注意 100比 要比100要大所以用101
         //*100.0000
         $zflv = 0;
@@ -118,6 +132,7 @@ class Order extends Base
         $this->assign('curZfType', $curZfType);
         $this->assign("start_datetime", $start_datetime);
         $this->assign("end_datetime", $end_datetime);
+        $this->assign("account_phone", $account_phone);
         $this->assign($order_total);
         // $this->assign("total_poundage", $total_poundage);
         // $this->assign("total_actualamount", $total_actualamount);
