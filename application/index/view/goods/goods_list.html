@@ -61,6 +61,7 @@
                                             <th data-sortable="true">店铺名</th>
                                             <th data-sortable="true">sku / 金额</th>
                                             <th data-sortable="true">商品链接</th>
+                                            <th data-sortable="true" data-field="order_link">链接</th>
                                             <th data-sortable="true">备注</th>
                                             <th data-sortable="true">时间</th>
                                             <th data-sortable="true">状态</th>
@@ -69,7 +70,7 @@
                                     </thead>
                                     <tbody>
                                         <foreach name="list" item="vo">
-                                            <tr>
+                                            <tr id="list_{$vo.id}">
                                                 <!-- <td data-field="state" data-checkbox="true"></td> -->
                                                 <td align="center" class="">
                                                     <div>{$vo.goods_id}</div>
@@ -89,6 +90,9 @@
                                                 </td>
                                                 <td align="center" class="">
                                                     <a href="{$vo.link}" target="_blank">商品</a>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.order_link}</div>
                                                 </td>
                                                 <td align="center" class="">
                                                     <div>{$vo.remark}</div>
@@ -114,7 +118,7 @@
                                         </foreach>
                                     </tbody>
                                 </table>
-                                <div style="float: right;margin-right: 160px;">
+                                <div style="float: right;margin-right: 100px;">
                                     {$page}
                                 </div>
                             </div>
@@ -193,7 +197,7 @@
                 swal(
                     {
                         title: "确定要『下架』此商品吗",
-                        text: "",
+                        text: "数据删除后无法恢复！",
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
@@ -213,14 +217,10 @@
                                 dataType: 'json',
                                 data: {id: id,act: 'ajax',status: 0},
                                 success: function(index){
-                                    // console.log(index);
-                                    $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo4" value="${id}">启用</button>`));
-                                    $span.replaceWith('<span class="label label-default label2">已下架</span>');
+                                    $('#list_'+id).remove();
                                     swal("下架成功！", "", "success");
                                 },
                                 error:function(index) {
-                                    // console.log(data);
-                                    console.log('data');
                                     swal("下架失败！", "", "error");
                                 },
                             });
@@ -230,6 +230,14 @@
                     }
                 );
             });
+        });
+
+
+        $(function () {
+            //展示列
+            // $('#exampleTableEvents').bootstrapTable('showColumn', 'ShopName');
+            //隐藏列
+            $('#exampleTableEvents').bootstrapTable('hideColumn', 'order_link');
         });
     </script>
 
