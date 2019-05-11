@@ -5,3 +5,5 @@ application/config.php
 *.log
 runtime
 public/upload
+application/config.php
+application/database.php
