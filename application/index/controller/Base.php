@@ -25,18 +25,18 @@ class Base extends Controller {
     public function _initialize() 
     {
         // 过滤不需要登陆的行为
-        // if(in_array(ACTION_NAME,array('login','logout'))){
-        // 	//return;
-        // }else{
-        // 	if(session('uid') > 0 ){
-        //         // $asd = $this->check_priv();//检查管理员菜单操作权限
-        // 		$son_uid = $this->son_uid();//查询子管理员
-        //         // dump($son_uid);
-        // 	}else{
-        // 		$this->error('请先登录',U('index/admin/login'),1);
-        // 	}
-        // }
-        // $this->public_assign();
+        if(in_array(ACTION_NAME,array('login','logout'))){
+        	//return;
+        }else{
+        	if(session('uid') > 0 ){
+                $asd = $this->check_priv();//检查管理员菜单操作权限
+        		$son_uid = $this->son_uid();//查询子管理员
+                // dump($son_uid);
+        	}else{
+        		$this->error('请先登录',U('index/admin/login'),1);
+        	}
+        }
+        $this->public_assign();
     }
     
     /**
@@ -84,7 +84,7 @@ class Base extends Controller {
     		$role_right = explode(',', $role_right);
     		//检查是否拥有此操作权限
     		if(!in_array($ctl.'@'.$act, $role_right)){
-    			$this->error('您没有操作权限['.($ctl.'@'.$act).'],请联系超级管理员分配权限');
+    			$this->error('您没有操作权限['.($ctl.'@'.$act).'],请联系超级管理员分配权限',U('index/index_v1'));
     		}
     		
     		 

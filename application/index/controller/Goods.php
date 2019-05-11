@@ -94,12 +94,17 @@ class Goods extends Common{
         // die;
         if($data['act'] == 'edit'){
             $goods_info = M('goods')->where($where)->find();
-            if ($url_param['goods_id'] != $goods_info['goods_id']) {
+            if (!empty($data['link']) && $url_param['goods_id'] != $goods_info['goods_id']) {
                 $this->error("链接中的goods_id不能修改",U('index/goods/goods_info',array('id'=>$data['id'])));
             }
-            $data['link'] = $goods_url.$url_param['goods_id'];  //拼接商品信息URL,该链接可查看商品信息
+            // $data['link'] = $goods_url.$url_param['goods_id'];  //拼接商品信息URL,该链接可查看商品信息
             unset($data['amount'], $data['act']);
             $res = M('goods')->where($where)->save($data);
+            if($res)  {
+                $this->success("操作成功",U('index/goods/goods_list'));
+            }else{
+                $this->error("操作失败",U('index/goods/goods_info',array('id'=>$data['id'])));
+            }
         }
 
         if($data['act'] == 'ajax'){

@@ -3,7 +3,7 @@ namespace app\index\controller;
 use think\Controller;
 use fast\Http;
 
-class Pdd extends Controller{
+class Pdd extends Base{
 
 	public function shop_list()
 	{
@@ -96,6 +96,12 @@ class Pdd extends Controller{
         
     }
 
+    public function delAddress($id,$access_token)
+    {
+        $url = 'https://mobile.yangkeduo.com/proxy/api/api/origenes/address/delete/'.$id;
+        $result = Http::POST($url,'',[],$access_token);
+    }
+
     public function user_add()
     {
     	$Model_Data = M('buyer');
@@ -140,10 +146,13 @@ class Pdd extends Controller{
     {
     	$Model_Data = M('buyer');
 	    $post = I('post.');
+        $old_address_id = $Model_Data->where('id',$post['id'])->getField('address_id');
 	    $address_id = $this->addAddress($post);
 	    if($address_id == false) {
 			$this->error('生成拼多多收货地址失败!');
-		}
+		} elseif(!empty($old_address_id)) {
+            $this->delAddress($old_address_id,$post['access_token']);
+        }
 		$post['address_id'] = $address_id;
     	if($Model_Data->where('id',$post['id'])->save($post)){
         	$this->success('编辑成功!',U('user'));
@@ -151,6 +160,17 @@ class Pdd extends Controller{
 	        $this->error('编辑失败!');
 	    }
     	return $this->fetch();
+    }
+
+    public function checkMobile()
+    {
+        $mobile = I('post.mobile');
+        $is_exist = M('buyer')->where('account',$mobile)->find();
+        if($is_exist) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function user_del()
@@ -176,10 +196,12 @@ class Pdd extends Controller{
     public function group()
     {
     	$model = M('buyer_group');
-
     	$list = $model->select();
-
+        $result = M('config')->where('name','group')->getField('value');
+        $this->assign('value',$result);
     	$this->assign('list',$list);
+        $is_received = M('order')->where(['status'=>['gt',0],'received_time'=>'0'])->count('id');
+        $this->assign('is_received',$is_received); 
     	return $this->fetch();
     }
 
@@ -196,6 +218,8 @@ class Pdd extends Controller{
 
     public function group_insert()
     {
+        $shop_list = M('shop')->select();
+        $this->assign('shop_list',$shop_list);
 		return $this->fetch();
     }
 
@@ -203,6 +227,8 @@ class Pdd extends Controller{
     {
     	$id = I('get.id');
     	$info = M('buyer_group')->where('id',$id)->find();
+        $shop_list = M('shop')->select();
+        $this->assign('shop_list',$shop_list);
     	$this->assign('info',$info);
     	return $this->fetch();
     }
@@ -269,6 +295,52 @@ class Pdd extends Controller{
         }else{
             $this->error("操作失败",U('index/pdd/buyer_group_info',array('id'=>$data['id'])));
         }
+    }
+
+    public function receivingGoods($uid,$order_sn,$access_token)
+    {
+        $url = 'http://apiv3.yangkeduo.com/order/'.$order_sn.'/received';
+        $access_token = 'MBA7UHBS6OBH6OCHRCLUDIROOSCVRSNLBNNLIO2EBNNEJVENVI7A100168a';
+        $result = Http::get($url,'','',$access_token);
+        $result_array = json_decode($result,true);
+        $model = M('order');
+        if(!isset($result_array['error_code']) && isset($result_array['server_time'])) {
+            $model->where(['order_sn'=>$order_sn])->save([
+                'received_time' => $result_array['server_time']
+            ]);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    // 批量收货
+    public function batchReceiving()
+    {
+        $buyer = M('buyer');
+        // 找出该组用户列表
+        $order = M('order');
+        // 获取已付款的订单 还需判断是否已确认收货
+        $order_list = $order->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->select();
+        // 提取订单列表满足条件的uid
+        if(empty($order_list)) {
+            return false;
+        } 
+        // $uids = ['2','4','5','6'];
+        $num = 0;
+        $uids = array_column($order_list, 'uid');
+        $user_list = $buyer->where(['id'=>['in',$uids]])->getField('id,access_token',true);
+        foreach ($order_list as $key => $value) {
+            $result = $this->receivingGoods($value['uid'],$value['order_sn'],$user_list[$value['uid']]);
+            if($result == true) $num ++;
+        }
+
+        return json_encode([
+            'code' => '200',
+            'msg'  => '执行成功! 如果为0 则未发货!',
+            'num'  => $num,
+        ]);
     }
 
 }

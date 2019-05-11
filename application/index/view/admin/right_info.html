@@ -50,11 +50,13 @@
                             
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">所属分组</label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2"> 
                                     <select class="form-control m-b" name="group">
                                         <option value="">请选择所属分组</option>
                                         <foreach name="group" item="vo" key="key">
-                                            <option value="{$key}" <if condition="$info[group] eq $key">selected</if>>{$vo}</option>
+                                            
+                                            <option value="{$key}" <if condition="$info.group eq $key">selected</if>>{$vo}</option>
+                                        
                                         </foreach>
                                     </select>
                                 </div>
@@ -88,7 +90,7 @@
                                     <table>
                                         <tr><th style="width:80%">权限码</th><th style="width: 50px;text-align: center;" >操作</th></tr>
                                         <tbody id="rightList">
-                                        <foreach name="info[right]" item="vo">
+                                        <foreach name="info.right" item="vo">
                                             <tr>
                                                 <td style="padding: 2px;"><input name="right[]" type="text" value="{$vo}" class="form-control" style="width:300px;"></td>
                                                 <td style="text-align: center;"><a class="ncap-btn" href="javascript:;" onclick="$(this).parent().parent().remove();">删除</a></td>

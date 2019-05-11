@@ -5,7 +5,7 @@
  * Date: 2019/5/6
  * Time: 14:35
  */
-namespace app\api\controller;
+namespace app\gateway\controller;
 use fast\Http;
 
 class Auth 
@@ -22,7 +22,7 @@ class Auth
                     'forbid_contractcode' => '1',
                     'forbid_pappay'   => '1',
             ],
-            'return_url' => 'http://mobile.yangkeduo.com/transac_wappay_callback.html?order_sn='.$order_sn.'&prepay_type=',
+            'return_url' => 'http://mobile.yangkeduo.com/transac_wappay_callback.html?order_sn=190507-070101238553922&prepay_type=',
             'app_id' => $app_id
         ];
         $param = json_encode($param);
@@ -64,8 +64,8 @@ class Auth
         $info = $config->where(['name'=>'group'])->find();
         $group_id = $info['value'];
         if($info == null) { // 第一次轮询没有轮次 需创建
-            $new_group = $group->where(['status'=>'1'])->find();
-            if($new_group == null) { // 没有正常状态的分组
+            $group = $group->where(['status'=>'1'])->find();
+            if($group == null) { // 没有正常状态的分组
                 $msg = [
                     'msg'  => '没有可轮询的分组!',
                     'code' => '0', 
@@ -74,14 +74,14 @@ class Auth
             }
             $param = [
                 'name'  => 'group',
-                'value' => $new_group['id'],
-                'info'  => (int)$new_group['aim_amount'],
+                'value' => $group['id'],
+                'info'  => (int)$group['aim_amount'],
                 'cate'  => 0,
 
             ];
             $config->insert($param); // 第一次轮询，记录当前分组
             $info = $param;
-            $group_id = $new_group['id'];
+            $group_id = $group_id;
         }
         
         // 判断目标金额是否大于实际金额
@@ -105,14 +105,14 @@ class Auth
             }
         } else {
             // 找出下一组。替换 config 表
-            $new_group = $group->where(['id'=>['>',$info['value']]])->where(['status'=>'1'])->find();
-            $group_id = $new_group['id'];
+            $group = $group->where(['id'=>['>',$info['value']]])->where(['status'=>'1'])->find();
+            $group_id = $group['id'];
             $config->where(['name'=>'group'])->save([
-                'value' => $new_group['id'],
-                'info'  => $new_group['aim_amount'],
+                'value' => $group['id'],
+                'info'  => $group['aim_amount'],
                 'cate'  => 0,
             ]);
-            $where['group'] = $new_group['id'];
+            $where['group'] = $group['id'];
         }
         // 查询出满足条件的用户
         if(!isset($user)) {
@@ -128,12 +128,8 @@ class Auth
         if($user == null) {
             // 该组没有正常用户
             // 将改组状态修改为false 并且删除上一次执行的用户
-            // halt($group_id);
-            $group->where(['id'=>$group_id])->save(['status'=>'0']);
             // 查询下个正常组
-            $success['status'] = '1';
-            $success['id'] = ['gt',$group_id];
-            $success_group = $group->where($success)->find();
+            $success_group = $group->where(['status'=>'1','id'=>['gt',$group_id]])->find();
             if($success_group == null) {
                 // 没有正常的组
                 $config->where(['name'=>'group'])->delete();
@@ -169,12 +165,12 @@ class Auth
     {
         $model = M('goods_sku');
         $group = M('buyer_group')->where(['id'=>$group_id])->find();
-        $goods_ids = M('goods')->where(['shop_id'=>$group['shop_id']])->where(['status'=>'1'])->getField('goods_id',true);
+        $goods_ids = M('goods')->where(['shop_id'=>$group['shop_id']])->getField('goods_id',true);
         $shop_id = $group['shop_id'];
         $info = $model->where(['amount'=>$price])->where(['goods_id'=>['in',$goods_ids]])->find();
         $num = 1;
 
-        if($info == null || $price > 1000) {
+        if($info == null) {
             $price_arr = [2500,2000,1000,500];
             foreach ($price_arr as $key => $value) {
                 $remainder = $price % $value;
@@ -194,10 +190,9 @@ class Auth
     }
 
 
-    public function getParam($price)
+    public function getParam($price = '200')
     {
         $user = $this->getNextBuyer();
-        // halt($user);
         $goods = $this->getStore($price,$user['group_id']);
         $order = [
             'uid' => $user['id'],
@@ -212,18 +207,11 @@ class Auth
         return $msg;
     }
 
-    public function orderAdd($param)
+    public function send($user,$goods)
     {
-    	// param = getParam[data][order]
-    	$model = M('order');
-    	$order_id = $model->insert($param);
-    }
-
-    public function send()
-    {
-        $param = $this->getParam('200');
-        $user = $param['data']['user'];
-        $goods = $param['data']['goods'];
+    	// $param = $this->getParam('200');
+    	// $user = $param['data']['user'];
+    	// $goods = $param['data']['goods'];
         // 创建订单
         $order = $this->order($user['address_id'],$goods,$user['access_token']);
         if(isset($order['error_code'])) {
@@ -251,16 +239,7 @@ class Auth
                 'data' => [],
             ];
         }
-        $notify_url = $result['query']['notify_url'];
-        unset($result['query']['notify_url']);
-        halt($result['query']);
-        $params = array_splice($result['query'],1,0,['notify_url'=>$notify_url]);
-        $url = http_build_query($params);
-        $param = $result['param'];  
-
-        // $str = 'service='.$param['service'].'&partner='.$param['partner'].'&seller_id='.$param['seller_id'].'&payment_type='.$param['payment_type'].'&notify_url='.$param['notify_url'].'&out_trade_no='.$param['out_trade_no'].''.=
-
-        //$param_str = $this->buildParam($result['query']);
+        $url = http_build_query($result['query']);
         $url = $result['gateway_url'] . '?' .$url;
         $res = [
             'code'  => '200',
@@ -271,33 +250,7 @@ class Auth
             ]
             
         ];
-        halt($res);
         return $res;
     }
 
-
-    public function getRegions()
-    {
-        $id = I('get.id');
-        $id = empty($id) ? '1' : $id;
-        $url = 'http://mobile.yangkeduo.com/proxy/api/api/galen/v2/regions/'.$id;
-        $token = I('token');
-        // $token = 'A7SXZ22RY2KJTV7HVKX6DK2S7DE3C2WOVNPJXISMUNH3EDGPZ3RQ101a883'; 
-        $result = Http::get($url,'','',$token);
-        $array = json_decode($result,true);
-
-        $data = [
-            'result' => $array,
-            'msg'    => '',
-            'code'   => '1',
-        ];
-        if(isset($array['error_code'])) {
-            $data['msg'] = 'AccessToken 失效';
-            $data['code'] = '2';
-            return json_encode($data);
-        } else {
-            return json_encode($data);
-        }
-
-    }
 }
