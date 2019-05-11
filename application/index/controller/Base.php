@@ -29,7 +29,7 @@ class Base extends Controller {
         	//return;
         }else{
         	if(session('uid') > 0 ){
-                // $asd = $this->check_priv();//检查管理员菜单操作权限
+                $asd = $this->check_priv();//检查管理员菜单操作权限
         		$son_uid = $this->son_uid();//查询子管理员
                 // dump($son_uid);
         	}else{
@@ -84,7 +84,7 @@ class Base extends Controller {
     		$role_right = explode(',', $role_right);
     		//检查是否拥有此操作权限
     		if(!in_array($ctl.'@'.$act, $role_right)){
-    			$this->error('您没有操作权限['.($ctl.'@'.$act).'],请联系超级管理员分配权限');
+    			$this->error('您没有操作权限['.($ctl.'@'.$act).'],请联系超级管理员分配权限',U('index/index_v1'));
     		}
     		
     		 

@@ -155,8 +155,10 @@ class Admin extends Base{
             $modules[$val['group']][] = $val;
         }
         //权限组
-        $group = array('goods'=>'商品管理','xuanhui'=>'选惠管理','activity'=>'活动管理','permission'=>'权限管理');
+        $group = array('goods'=>'商品管理','buyer'=>'买家管理','buyer_group'=>'买家分组管理','shop'=>'商家管理','permission'=>'权限管理');
         $this->assign('group',$group);
+        // dump($group);
+        // dump($modules);
         $this->assign('modules',$modules);
         return $this->fetch();
     }

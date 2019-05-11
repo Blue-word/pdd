@@ -50,7 +50,7 @@
                                      </if>
                                      
                                 </div>
-                                <table id="exampleTableEvents" data-height="465" data-mobile-responsive="true">
+                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -237,9 +237,12 @@
                                 success: function(index){
                                     if(index == false) {
                                         swal("确认收货失败！", "确认收货失败！", "error");return;
+                                    } else {
+                                        res = JSON.parse(index);
+                                        console.log(res);
+                                        var num = res.num;
+                                        swal("确认收获成功！", "成功收货"+num+'件订单', "success");
                                     }
-                                    var num = index.data.num;
-                                    swal("确认收获成功！", "成功收货"+num+'件订单', "success");
                                 },
                                 error:function(index) {
                                     swal("确认收货失败！", "确认收货失败！", "error");

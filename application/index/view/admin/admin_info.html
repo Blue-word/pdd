@@ -83,7 +83,7 @@
                                 <div class="col-sm-2">
                                     <select class="form-control m-b" name="role_id" required="" aria-required="true">
                                         <volist name="role" id="vo">
-                                            <option value="{$vo.role_id}" <if condition="$vo[role_id] eq $info[role_id]"> selected="selected"</if> >{$vo.role_name}</option>
+                                            <option value="{$vo.role_id}" <if condition="$vo.role_id eq $info.role_id"> selected="selected"</if> >{$vo.role_name}</option>
                                         </volist>
                                     </select>
                                 </div>
@@ -94,7 +94,7 @@
                                 <div class="col-sm-2">
                                     <select class="form-control m-b" name="pid">
                                         <volist name="pid_admin" id="item">
-                                            <option value="{$item.uid}" <if condition="$item[uid] eq $info[pid]"> selected="selected"</if> >{$item.info}</option>
+                                            <option value="{$item.uid}" <if condition="$item.uid eq $info.pid"> selected="selected"</if> >{$item.info}</option>
                                         </volist>
                                     </select>
                                 </div>

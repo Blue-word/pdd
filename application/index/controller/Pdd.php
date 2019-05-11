@@ -328,6 +328,7 @@ class Pdd extends Base{
             return false;
         } 
         // $uids = ['2','4','5','6'];
+        $num = 0;
         $uids = array_column($order_list, 'uid');
         $user_list = $buyer->where(['id'=>['in',$uids]])->getField('id,access_token',true);
         foreach ($order_list as $key => $value) {
@@ -337,7 +338,7 @@ class Pdd extends Base{
 
         return json_encode([
             'code' => '200',
-            'msg'  => '执行成功!',
+            'msg'  => '执行成功! 如果为0 则未发货!',
             'num'  => $num,
         ]);
     }
