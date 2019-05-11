@@ -23,16 +23,19 @@ class Goods extends Common{
     * 商品列表 
     **/
     public function goods_list(){
-        if (I('post.shop_id')) {
-            $where['shop_id'] = I('post.shop_id');
+        $shop_id = I('post.shop_id');
+        if ($shop_id) {
+            $where['shop_id'] = $shop_id;
         }
         $where['status'] = 1;
-        $list = M('goods')->where($where)->paginate(10);
+        $list = M('goods')->where($where)->paginate(25, false, ['query'=>$where]);
+        // 获取分页显示
         $page = $list->render();
-        // 转换成数组
-        $list = $list->toArray();
+        $total = $list->total();
+        // 获取分页列表数据
+        $list = $list->items();
         if ($list) {
-            foreach ($list['data'] as $key => $value) {
+            foreach ($list as $key => $value) {
                 $goods_ids[] = $value['goods_id'];
             }
             $sku_where['goods_id'] = ['in', array_unique($goods_ids)];
@@ -43,7 +46,7 @@ class Goods extends Common{
                 $goods_sku_list[$value['goods_id']][$key]['amount'] = $value['amount'];
             }
             $shop = M('shop')->where(['status'=>1])->getField('id,name');   //店铺
-            foreach ($list['data'] as $key => &$value) {
+            foreach ($list as $key => &$value) {
                 $sku_str = '';
                 if ($goods_sku_list[$value['goods_id']]) {
                     foreach ($goods_sku_list[$value['goods_id']] as $k => $v) {
@@ -58,7 +61,9 @@ class Goods extends Common{
         $shop_list = M('shop')->where(['status'=>1])->select();
         $this->assign('page', $page);
         $this->assign('shop_list',$shop_list);
-        $this->assign('list',$list['data']);
+        $this->assign('list',$list);
+        $this->assign('total',$total);
+        $this->assign('shop_id',$shop_id);
         return $this->fetch();
     }
 
@@ -105,7 +110,11 @@ class Goods extends Common{
         }
 
         if($data['act'] == 'ajax'){
+            $goods_info = M('goods')->where($where)->find();
             $res = M('goods')->where($where)->limit(1)->delete();
+            if ($res) {
+                M('goods_sku')->where(['goods_id'=>$goods_info['goods_id']])->limit(1)->delete();   // 删除sku
+            }
             exit(json_encode($res));
         }
         

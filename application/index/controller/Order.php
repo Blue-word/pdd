@@ -40,7 +40,7 @@ class Order extends Base
         }
         $status = I('status','');
         $curZfType = -1;
-		if ($status) {
+		if ($status != '') {
 			switch ($status){
 		        case "0":
 		            //未支付
@@ -71,9 +71,23 @@ class Order extends Base
 		            break;
 		    }
         }
-        
+        // 查实已确认收货订单
+        $received_time = I('post.received_time','');
+        $page_where['received_time'] = I('received_time', '');
+        if($received_time == '1') {
+            $where['received_time'] = ['gt',1];
+            $where_list['received_time'] = ['gt',1];
+        } elseif($received_time == '2') {
+            $where['received_time'] = ['eq',0];
+            $where_list['received_time'] = ['eq',0];
+        }
+
+        $this->assign('received_time',$received_time);
         $start_datetime = I('start_datetime', '');
         $end_datetime = I('end_datetime', '');
+        $page_where['start_datetime'] = I('start_datetime', '');
+        $page_where['end_datetime'] = I('end_datetime', '');
+
         if( ($start_datetime && !strpos($start_datetime, "ed"))  && ($end_datetime && !strpos($end_datetime, "ed"))  ) {
     		$where['order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
     		$where_list['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
@@ -83,15 +97,27 @@ class Order extends Base
         	// $where['order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
         	// $where_list['o.order_time'] = array(array('egt',strtotime($start_datetime)),array('elt',strtotime($end_datetime)));
 		}
+
+        // 买家手机号搜索
+        $mobile = I('account_phone');
+        if($mobile) {
+            $where_list['u.account'] = $mobile;
+            $this->assign('account_phone',$mobile);
+        }
+
  		$order = M('Order');
  		$shop = M('shop');
+        // 处理分页传参
+        $page_where = array_merge($where, $page_where);
+        unset($page_where['order_time']);
         $list = $order
         			->alias('o')
-        			->field("o.id,o.shop_id,o.pay_memberid,o.pay_orderid,o.out_trade_no,o.pay_productname,o.order_amount,o.pay_poundage,o.pay_actualamount,o.order_time,o.pay_time,o.status,s.name as shop_name")
+        			->field("o.id,o.uid,o.received_time,o.shop_id,o.pay_memberid,o.pay_orderid,o.out_trade_no,o.pay_productname,o.order_amount,o.pay_poundage,o.pay_actualamount,o.order_time,o.pay_time,o.status,s.name as shop_name,o.order_sn,u.account as account_phone")
         			->join('shop s','o.shop_id = s.id')
+                    ->join('buyer u','o.uid = u.id')
         			->where($where_list)
         			->order('o.id desc')
-        			->paginate(15);
+        			->paginate(25,false,['query'=>$page_where]);
         // 店铺
         $shop_list = $shop->select();
         // 计算所有订单的总值
@@ -108,6 +134,9 @@ class Order extends Base
 	        $zflv > 100.0000 ? $zflv= 100.0000:$zflv;
 	        $zflv = number_format($zflv, 2);
 	    }
+
+        // 统计同条件下，确认收货订单数量
+        // $received_order = $order->where($where)->where(['received_time'=>['gt',0]])->count();
         $this->assign('list', $list);
         $this->assign('shop_list', $shop_list);
         $this->assign('shop_id', $shop_id);
@@ -122,6 +151,7 @@ class Order extends Base
         // $this->assign("total_poundage", $total_poundage);
         // $this->assign("total_actualamount", $total_actualamount);
         $this->assign("success_order", $successOrderCount);
+        // $this->assign('received_order',$received_order);
         $this->assign("zflv", $zflv);
 		return $this->fetch();
 	}

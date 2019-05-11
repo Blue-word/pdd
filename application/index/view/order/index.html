@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单列表</title>
+    <link rel="shortcut icon" href="favicon.ico"> <link href="__PUBLIC__/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/static/css/plugins/layui/css/layui.css">
+        <style type="text/css">
+        .clearfix,.pagination-detail,.pagination-outline{
+            display: none;
+        }
+        .pagination-info {
+            line-height: 34px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+        <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
+        <a href="javascript:location.replace(location.href);" title="刷新" >
+            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
+        </a> 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <h4 class="example-title">订单列表</h4>
+                            <div class="example">
+                                <form method="post" action="">
+                                    <div class="col-sm-3">
+                                        <input type="text" class="layui-input" id="test6" placeholder=" - ">
+                                        <input type="hidden" name="start_datetime" id="start_datetime" value="{$start_datetime}">
+                                        <input type="hidden" name="end_datetime" id="end_datetime" value="{$end_datetime}">
+                                    </div>
+                                    <div class="col-sm-2">
+                                    <select class="form-control selectpicker show-tick reset" name="shop_id" data-live-search="true"  data-size="6">
+                                        <option value="">请选择店铺</option>
+                                        <foreach name="shop_list" item="vo">
+                                            <option value="{$vo.id}" <if condition="$vo.id eq $shop_id">selected</if>>{$vo.name}</option>
+                                        </foreach>
+                                    </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="pay_memberid" class="form-control" value="{$pay_memberid}" type="text" placeholder="商户ID">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="pay_orderid" class="form-control" value="{$pay_orderid}" type="text" placeholder="系统订单号">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="out_trade_no" class="form-control" value="{$out_trade_no}" type="text" placeholder="商户订单号">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="order_sn" class="form-control" value="{$order_sn}" type="text" placeholder="拼多多订单号">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="account_phone" class="form-control" value="{$account_phone}" type="text" placeholder="买家手机号">
+                                    </div>
+                                    <div class="col-sm-2">
+                                    <select class="form-control selectpicker show-tick reset" name="received_time" data-live-search="true"  data-size="6">
+                                        <option value="">请选择是否收货</option>
+                                        <option value="1" <if condition="$received_time eq 1">selected</if>>已收货</option>
+                                        <option value="2" <if condition="$received_time eq 2">selected</if>>未收货</option>
+                                    </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                    <select class="form-control selectpicker show-tick reset" name="status" data-live-search="true"  data-size="4">
+                                        <option value="">订单状态</option>
+                                        <option value="0" <if condition="$curZfType eq 0">selected</if>>未支付</option>
+                                        <option value="1,2" <if condition="$curZfType eq 3">selected</if>>已支付</option>
+                                        <option value="1" <if condition="$curZfType eq 1">selected</if>>已支付未回调</option>
+                                        <option value="2" <if condition="$curZfType eq 2">selected</if>>已支付已回调</option>
+                                    </select>
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">搜索</button>
+                                </form>
+                                <br>
+                                <br>
+                                <br>
+                                <blockquote class="layui-elem-quote" style="font-size:14px;padding:8px;">
+                                    <span class="count-item">
+                                        <label>订单金额:</label>
+                                        <span class="label label-info" id="total_amount">{$total_amount|default="0"}</span>
+                                        <span class="unit">元</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span class="count-item">
+                                        <label>平台手续费:</label>
+                                        <span class="label label-info" id="total_poundage">{$total_poundage|default="0"}</span>
+                                        <span class="unit">元</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span class="count-item">
+                                        <label>实际金额:</label>
+                                        <span class="label label-info" id="total_actualamount">{$total_actualamount|default="0"}</span>
+                                        <span class="unit">元</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span class="count-item">
+                                        <label>订单笔数:</label>
+                                        <span class="label label-info" id = "total_order">{$total_order|default="0"}</span>
+                                        <span class="unit">笔</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span id="zhifucount" class="count-item">
+                                        <label>支付笔数:</label>
+                                        <span class="label label-info" id="success_order">{$success_order|default="0"}</span>
+                                        <span class="unit">笔</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span id="zhifulvcount" class="count-item">
+                                        <label>支付率:</label>
+                                        <span class="label label-info" id="zflv">{$zflv|default="0"}</span>
+                                        <span class="unit">%</span>
+                                    </span>
+                                </blockquote>
+                                <table id="exampleTableEvents" data-height="1024" data-mobile-responsive="true" data-sort-name="First" data-sort-order="desc" data-page-size='50'>
+                                    <thead>
+                                        <tr>
+                                            <th data-sortable="true">编号</th>
+                                            <th data-sortable="true">商户编号</th>
+                                            <th data-sortable="true">系统订单号</th>
+                                            <th data-sortable="true">商户订单号</th>
+                                            <th>拼多多订单号</th>
+                                             <th data-sortable="true">买家手机号</th>
+                                            <th data-sortable="true">商品名称</th>
+                                            <th data-sortable="true">交易金额</th>
+                                            <th data-sortable="true">手续费</th>
+                                            <th data-sortable="true">实际金额</th>
+                                            <th>提交时间</th>
+                                            <th>成功时间</th>
+                                            <th data-sortable="true">渠道店铺</th>
+                                            <th data-sortable="true">是否收货</th>
+                                            <th data-sortable="true">交易状态</th>
+                                            <th width="50">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <foreach name="list" item="vo">
+                                            <tr>
+                                                <td align="center" class="">
+                                                    <div>{$vo.id}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.pay_memberid}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.pay_orderid}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.out_trade_no}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div style="width:180px">{$vo.order_sn}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div style="width:180px">{$vo.account_phone}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.pay_productname}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.order_amount}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.pay_poundage}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.pay_actualamount}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div style="width:140px">{$vo.order_time|date="Y-m-d H:i:s",###}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div style="width:140px">
+                                                        <if condition="$vo.pay_time gt 0">{$vo.pay_time|date="Y-m-d H:i:s",###}
+                                                        </if>
+                                                    </div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.shop_name}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <if condition="($vo.status gt 0) and ($vo.received_time gt 0)">
+                                                        <button class="btn btn-warning btn-sm" value="{$vo.id}">已收货</button>
+                                                    <elseif condition="$vo.status gt 0">
+                                                        <button class="btn btn-warning btn-sm">待收货</button>
+                                                    </if>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <if condition="$vo.status eq 0">
+                                                        <button class="btn btn-warning btn-sm">未支付</button>
+                                                    <elseif condition="$vo.status eq 1">
+                                                        <button class="btn btn-primary btn-sm">成功，未返回</button>
+                                                    <elseif condition="$vo.status eq 2">
+                                                        <button class="btn btn-primary btn-sm">成功，已返回</button>
+                                                    </if> 
+                                                </td>
+                                                <td align="center" class="">
+                                                    <button class="btn btn-info btn-sm demo5">订单补发</button>
+                                                </td>
+                                            </tr>
+                                        </foreach>
+                                    </tbody>
+                                </table>
+                                <div style="float: left; line-height: 70px;">
+                                    <span class="pagination-info">显示第 1 到第 15 条记录，总共 {$list->total()} 条记录</span>
+                                </div>
+                                
+                                <div style="float: right;">
+                                    {$list->render()}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="__PUBLIC__/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="__PUBLIC__/static/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Bootstrap table -->
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js?v=1.0.0"></script>
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <!-- Peity -->
+    <script src="__PUBLIC__/static/js/demo/bootstrap-table-demo.js"></script>
+    <!-- Sweet alert -->
+    <script src="__PUBLIC__/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <!-- layui -->
+    <script src="__PUBLIC__/static/css/plugins/layui/layui.js" charset="utf-8"></script>
+    <script>
+        var queryDateTime = '{$start_datetime}';
+        console.log(queryDateTime);
+        var queryEndDateTime= '{$end_datetime}';
+        // 给input 设置一下默认时间
+        $('#test6').val('{$start_datetime}'+' - '+ '{$end_datetime}');
+        $(document).ready(function () {
+            $('#exampleTableEvents').on('click', '.demo5', function (event) {
+                swal(
+                    {
+                        title: "确定要补发订单吗",
+                        text: "",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "补发订单",
+                        cancelButtonText: "取消",
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        allowOutsideClick: true,
+                    }, 
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            // var id = $(event.currentTarget).attr('value');
+                            // var $span = $(event.currentTarget).parent().prev().find("span");
+                            // $.ajax({
+                            //     type: 'POST',
+                            //     url: "{:U('Goods/goods_handle')}",
+                            //     dataType: 'json',
+                            //     data: {id: id,act: 'ajax',status: 0},
+                            //     success: function(index){
+                            //         // console.log(index);
+                            //         $(event.currentTarget).replaceWith($(`<button class="btn btn-warning btn-sm demo4" value="${id}">启用</button>`));
+                            //         $span.replaceWith('<span class="label label-default label2">已下架</span>');
+                            //         swal("下架成功！", "", "success");
+                            //     },
+                            //     error:function(index) {
+                            //         // console.log(data);
+                            //         console.log('data');
+                            //         swal("下架失败！", "", "error");
+                            //     },
+                            // });
+                        } else {
+                            swal("已取消", "", "error");
+                        }
+                    }
+                );
+            });
+        });
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#test6',
+                type: 'datetime',
+                range: true,
+                 done: function(value, date, endDate){
+                    queryDateTime =  date.year+"-"+PrefixInteger(date.month,2)+"-"+PrefixInteger(date.date,2)+" "+PrefixInteger(date.hours,2) +":"+PrefixInteger(date.minutes,2)+":"+PrefixInteger(date.seconds,2);
+                    queryEndDateTime = endDate.year+"-"+PrefixInteger(endDate.month,2)+"-"+PrefixInteger(endDate.date,2)+" "+PrefixInteger(endDate.hours,2) +":"+PrefixInteger(endDate.minutes,2)+":"+PrefixInteger(endDate.seconds,2);
+              
+                     console.log("value："+value); //得到日期生成的值，如：2017-08-18
+                    console.log("date："+  date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                    console.log("endDate："+endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                    $("#start_datetime").val(queryDateTime);
+                    $("#end_datetime").val(queryEndDateTime);
+            }
+            });
+        });
+        function PrefixInteger(num, length) {
+            return (Array(length).join('0') + num).slice(-length);
+        };
+    </script>
+
+</body>
+
+
+</html>

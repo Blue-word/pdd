@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店铺交易统计</title>
+    <link rel="shortcut icon" href="favicon.ico"> <link href="__PUBLIC__/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/animate.css" rel="stylesheet">
+    <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/static/css/plugins/layui/css/layui.css">
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <h4 class="example-title">交易统计({$title})</h4>
+                            <div class="example">
+                                <form method="post" action="">
+                                    <!-- <div class="col-sm-4">
+                                        <input type="text" class="layui-input" id="test6" placeholder=" - ">
+                                        <input type="hidden" name="start_datetime" id="start_datetime" value="{$start_datetime}">
+                                        <input type="hidden" name="end_datetime" id="end_datetime" value="{$end_datetime}">
+                                    </div> -->
+                                    <div class="col-sm-2">
+                                        <input name="shop_id" class="form-control" value="{$shop_id}" type="text" placeholder="店铺ID">
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">搜索</button>
+                                </form>
+                                <br>
+                                <blockquote class="layui-elem-quote" style="font-size:14px;padding:8px;">
+                                    <span class="count-item">
+                                        <label>订单金额:</label>
+                                        <span class="label label-info" id="total_amount">{$total_amount}</span>
+                                        <span class="unit">元</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span class="count-item">
+                                        <label>订单笔数:</label>
+                                        <span class="label label-info" id = "total_order">{$total_order}</span>
+                                        <span class="unit">笔</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span id="zhifucount" class="count-item">
+                                        <label>平台手续费:</label>
+                                        <span class="label label-info" id="total_poundage">{$total_poundage}</span>
+                                        <span class="unit">笔</span>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span class="count-item">
+                                        <label>实际金额:</label>
+                                        <span class="label label-info" id="total_actualamount">{$total_actualamount}</span>
+                                        <span class="unit">元</span>
+                                    </span>
+                                </blockquote>
+                                <table id="exampleTableEvents" data-height="560" data-mobile-responsive="true" data-sort-name="First" data-sort-order="desc">
+                                    <thead>
+                                        <tr>
+                                            <th data-sortable="true">店铺ID</th>
+                                            <th data-sortable="true">店铺名称</th>
+                                            <th data-sortable="true">成功订单（笔）</th>
+                                            <th data-sortable="true">支付率</th>
+                                            <th data-sortable="true">交易金额（元）</th>
+                                            <th data-sortable="true">手续费（元）</th>
+                                            <th data-sortable="true">实际金额（元）</th>
+                                            <th width="50">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <foreach name="list" item="vo">
+                                            <tr>
+                                                <td align="center" class="">
+                                                    <div>{$vo.shop_id}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.name}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.successOrderCount}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.zflv}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.amount}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.poundage}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                    <div>{$vo.actualamount}</div>
+                                                </td>
+                                                <td align="center" class="">
+                                                </td>
+                                            </tr>
+                                        </foreach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="__PUBLIC__/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="__PUBLIC__/static/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Bootstrap table -->
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <!-- Peity -->
+    <script src="__PUBLIC__/static/js/demo/bootstrap-table-demo.js"></script>
+    <!-- Sweet alert -->
+    <script src="__PUBLIC__/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <!-- layui -->
+    <script src="__PUBLIC__/static/css/plugins/layui/layui.js" charset="utf-8"></script>
+    <script>
+        var queryDateTime = '{$start_datetime}';
+        var queryEndDateTime= '{$end_datetime}';
+        // 给input 设置一下默认时间
+        $('#test6').val('{$start_datetime}'+' - '+ '{$end_datetime}');
+        $(document).ready(function () {
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#test6',
+                type: 'datetime',
+                range: true,
+                 done: function(value, date, endDate){
+                    queryDateTime =  date.year+"-"+PrefixInteger(date.month,2)+"-"+PrefixInteger(date.date,2)+" "+PrefixInteger(date.hours,2) +":"+PrefixInteger(date.minutes,2)+":"+PrefixInteger(date.seconds,2);
+                    queryEndDateTime = endDate.year+"-"+PrefixInteger(endDate.month,2)+"-"+PrefixInteger(endDate.date,2)+" "+PrefixInteger(endDate.hours,2) +":"+PrefixInteger(endDate.minutes,2)+":"+PrefixInteger(endDate.seconds,2);
+              
+                     console.log("value："+value); //得到日期生成的值，如：2017-08-18
+                    console.log("date："+  date); //得到日期时间对象：{year: 2017, month: 8, date: 18, hours: 0, minutes: 0, seconds: 0}
+                    console.log("endDate："+endDate); //得结束的日期时间对象，开启范围选择（range: true）才会返回。对象成员同上。
+                    $("#start_datetime").val(queryDateTime);
+                    $("#end_datetime").val(queryEndDateTime);
+            }
+            });
+        });
+        });
+        function PrefixInteger(num, length) {
+            return (Array(length).join('0') + num).slice(-length);
+        };
+    </script>
+
+</body>
+
+
+</html>
