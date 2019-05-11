@@ -11,7 +11,7 @@
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-        <style type="text/css">
+    <style type="text/css">
         .clearfix,.pagination-detail,.pagination-outline{
             display: none;
         }
@@ -55,13 +55,13 @@
                                     <select class="form-control selectpicker show-tick reset" name="shop_id" data-live-search="true"  data-size="6">
                                         <option value="">请选择店铺</option>
                                         <foreach name="shop_list" item="vo">
-                                            <option value="{$vo.id}">{$vo.name}</option>
+                                            <option value="{$vo.id}" <if condition="$vo.id eq $shop_id">selected</if>>{$vo.name}</option>
                                         </foreach>
                                     </select>
                                     </div>
                                     <button class="btn btn-primary" type="submit">搜索</button>
                                 </form>
-                                <table id="exampleTableEvents" data-height="560" data-mobile-responsive="true" data-sort-name="First" data-sort-order="desc">
+                                <table id="exampleTableEvents" data-toggle="table" data-height="860" data-sort-name="First" data-sort-order="desc" data-page-size="50">
                                     <thead>
                                         <tr>
                                             <!-- <th data-field="state" data-checkbox="true"></th> -->
@@ -153,7 +153,6 @@
 
     <!-- Bootstrap table -->
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
     <!-- Peity -->
@@ -242,13 +241,13 @@
                     }
                 );
             });
-        });
 
+        });
 
         $(function () {
             //展示列
             // $('#exampleTableEvents').bootstrapTable('showColumn', 'ShopName');
-            //隐藏列
+            //隐藏列 pageSize
             $('#exampleTableEvents').bootstrapTable('hideColumn', 'order_link');
         });
     </script>

@@ -23,11 +23,12 @@ class Goods extends Common{
     * 商品列表 
     **/
     public function goods_list(){
-        if (I('post.shop_id')) {
-            $where['shop_id'] = I('post.shop_id');
+        $shop_id = I('post.shop_id');
+        if ($shop_id) {
+            $where['shop_id'] = $shop_id;
         }
         $where['status'] = 1;
-        $list = M('goods')->where($where)->paginate(25);
+        $list = M('goods')->where($where)->paginate(25, false, ['query'=>$where]);
         // 获取分页显示
         $page = $list->render();
         $total = $list->total();
@@ -62,6 +63,7 @@ class Goods extends Common{
         $this->assign('shop_list',$shop_list);
         $this->assign('list',$list);
         $this->assign('total',$total);
+        $this->assign('shop_id',$shop_id);
         return $this->fetch();
     }
 

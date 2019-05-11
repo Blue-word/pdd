@@ -12,23 +12,9 @@
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link rel="stylesheet" href="__PUBLIC__/static/css/plugins/layui/css/layui.css">
-        <style type="text/css">
-        .clearfix,.pagination-detail,.pagination-outline{
-            display: none;
-        }
-        .pagination-info {
-            line-height: 34px;
-            margin-right: 5px;
-        }
-    </style>
 </head>
 
 <body class="gray-bg">
-        <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
-        <a href="javascript:location.replace(location.href);" title="刷新" >
-            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
-        </a> 
-    </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="ibox float-e-margins">
             <div class="ibox-content">
@@ -66,13 +52,6 @@
                                     </div>
                                     <div class="col-sm-2">
                                         <input name="account_phone" class="form-control" value="{$account_phone}" type="text" placeholder="买家手机号">
-                                    </div>
-                                    <div class="col-sm-2">
-                                    <select class="form-control selectpicker show-tick reset" name="received_time" data-live-search="true"  data-size="6">
-                                        <option value="">请选择是否收货</option>
-                                        <option value="1" <if condition="$received_time eq 1">selected</if>>已收货</option>
-                                        <option value="2" <if condition="$received_time eq 2">selected</if>>未收货</option>
-                                    </select>
                                     </div>
                                     <div class="col-sm-2">
                                     <select class="form-control selectpicker show-tick reset" name="status" data-live-search="true"  data-size="4">
@@ -125,7 +104,7 @@
                                         <span class="unit">%</span>
                                     </span>
                                 </blockquote>
-                                <table id="exampleTableEvents" data-height="1024" data-mobile-responsive="true" data-sort-name="First" data-sort-order="desc" data-page-size='50'>
+                                <table id="exampleTableEvents" data-height="560" data-mobile-responsive="true" data-sort-name="First" data-sort-order="desc">
                                     <thead>
                                         <tr>
                                             <th data-sortable="true">编号</th>
@@ -214,11 +193,7 @@
                                         </foreach>
                                     </tbody>
                                 </table>
-                                <div style="float: left; line-height: 70px;">
-                                    <span class="pagination-info">显示第 1 到第 15 条记录，总共 {$list->total()} 条记录</span>
-                                </div>
-                                
-                                <div style="float: right;">
+                                <div style="float: left;">
                                     {$list->render()}
                                 </div>
                             </div>
