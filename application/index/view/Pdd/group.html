@@ -90,7 +90,7 @@
                                                 </td>
                                                 <td align="center" class="">
                                                     <if condition="$value == $vo.id ">
-                                                        <button class="btn btn-primary btn-sm">当前分组执行中</button>
+                                                        <button class="btn btn-primary btn-sm">执行中</button>
                                                     </if>
                                                     <if condition="($vo.status eq 0) OR ($vo.status eq -1)">
                                                         <button class="btn btn-warning btn-sm demo4" value="{$vo.id}">启用</button>
@@ -100,15 +100,22 @@
 													<a href="{:U('Pdd/buyer_group_info',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >组员</button>
                                                     <a href="{:U('Pdd/group_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
-                                                    <a href="{:U('Pdd/check',array('group_id'=>$vo['id']))}"><button class="btn btn-danger btn-sm" >检测用户异常</button>
+                                                    <a href="{:U('Pdd/check',array('group_id'=>$vo['id']))}"><button class="btn btn-danger btn-sm" >检测用户</button>
                                                     </a>
+
+                                                <if condition="$vo.is_shipping gt 0 ">
+                                                    <button class="btn btn-warning btn-sm" onclick="shipping({$vo.is_shipping},{$vo.id})">待发货订单({$vo.is_shipping})</button>
+                                                <else>
+                                                    <button class="btn btn-default btn-sm" disabled="disabled">暂无订单</button>
+                                                </if>
 
 
                                                  <if condition="$vo.is_received gt 0 ">
                                                   <button class="btn btn-primary btn-sm" onclick="received({$vo.is_received},{$vo.id})">待确认收货订单({$vo.is_received})</button>
                                                  <else>
-                                                     <button class="btn btn-default btn-sm" disabled="disabled">暂无待收货订单</button>
+                                                     <button class="btn btn-default btn-sm" disabled="disabled">暂无订单</button>
                                                  </if>
+
                                                 </td>
                                             </tr>
                                         </foreach>
@@ -275,6 +282,52 @@
                             });
                         } else {
                             swal("已取消", "暂时不确认收货！", "error");
+                        }
+                    }
+                );
+        }
+
+
+        function shipping(num,id)
+        {
+            // alert('一键收获');
+          swal(
+                    {
+                        title: "您确定要批量发货吗?",
+                        text: "待发货订单数"+num,
+                        type: "warning",
+                        showCancelButton: true,
+                        showRollButton: true,
+                        confirmButtonColor: "#1ab394",
+                        confirmButtonText: "批量发货",
+                        cancelButtonText: "暂不发货",
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        allowOutsideClick: true,
+                    }, 
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                type: 'POST',
+                                url: "{:U('api/send/sendOrder')}",
+                                dataType: 'json',
+                                data:{group_id:id},
+                                success: function(index){
+                                    if(index == false) {
+                                        swal("发货失败！", "发货失败！", "error");return;
+                                    } else {
+                                        res = JSON.parse(index);
+                                        console.log(res);
+                                        var num = res.num;
+                                        swal("发货成功！", num, "success");
+                                    }
+                                },
+                                error:function(index) {
+                                    swal("发货失败！", "发货失败！", "error");
+                                },
+                            });
+                        } else {
+                            swal("已取消", "暂不发货！", "error");
                         }
                     }
                 );

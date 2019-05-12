@@ -217,6 +217,13 @@ class Pdd extends Base{
             $is_received = M('Order')->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->where(['group'=>$item['id']])->count();
 
             $item['is_received'] = $is_received;
+            $is_shipping = M('Order')->where([
+                'group' => $item['id'],
+                'status'=> 2,
+                'is_deliver_goods' => 0,
+                'received_time' => 0
+            ])->count('id');
+            $item['is_shipping'] = $is_shipping;
             return $item;
         });
         $result = M('config')->where('name','group')->getField('value');
