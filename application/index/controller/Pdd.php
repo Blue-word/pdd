@@ -8,7 +8,7 @@ class Pdd extends Base{
 	public function shop_list()
 	{
 		$model = M('shop');
-		$list = $model->select();
+		$list = $model->where(['status'=>'1'])->paginate(25);
 		$this->assign('list',$list);
 		return $this->fetch();
 	}
@@ -68,8 +68,22 @@ class Pdd extends Base{
     public function user()
     {
     	$model = M('buyer');
-    	$list = $model->select();
+        $status = I('post.status');
+        if($status == '1') {
+            $where['a.status'] = '1';
+        } elseif($status == '2') {
+            $where['a.status'] = '0';
+        } else {
+            $where = [];
+        }
+        $mobile = I('post.mobile');
+        if($mobile) {
+            $where['a.account'] = $mobile;
+        }
+    	$list = $model->alias('a')->field('a.*,b.name')->join('buyer_group b','a.group = b.id')->where($where)->paginate(25,false,['query'=>request()->param()]);
     	$this->assign('list',$list);
+        $this->assign('mobile',$mobile);
+        $this->assign('status',$status);
     	return $this->fetch();
     }
 
@@ -183,6 +197,9 @@ class Pdd extends Base{
     	}
     }
 
+
+
+
 	public function user_handle(){
         $data = I('post.');
         $res = M('buyer')->where('id',$data['id'])->save(['status'=>$data['status']]);
@@ -196,7 +213,12 @@ class Pdd extends Base{
     public function group()
     {
     	$model = M('buyer_group');
-    	$list = $model->select();
+        $list = $model->paginate(25)->each(function($item,$key) {
+            $is_received = M('Order')->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->where(['group'=>$item['id']])->count();
+
+            $item['is_received'] = $is_received;
+            return $item;
+        });
         $result = M('config')->where('name','group')->getField('value');
         $this->assign('value',$result);
     	$this->assign('list',$list);
@@ -300,7 +322,7 @@ class Pdd extends Base{
     public function receivingGoods($uid,$order_sn,$access_token)
     {
         $url = 'http://apiv3.yangkeduo.com/order/'.$order_sn.'/received';
-        $access_token = 'MBA7UHBS6OBH6OCHRCLUDIROOSCVRSNLBNNLIO2EBNNEJVENVI7A100168a';
+        // $access_token = 'MBA7UHBS6OBH6OCHRCLUDIROOSCVRSNLBNNLIO2EBNNEJVENVI7A100168a';
         $result = Http::get($url,'','',$access_token);
         $result_array = json_decode($result,true);
         $model = M('order');
@@ -321,8 +343,14 @@ class Pdd extends Base{
         $buyer = M('buyer');
         // 找出该组用户列表
         $order = M('order');
-        // 获取已付款的订单 还需判断是否已确认收货
-        $order_list = $order->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->select();
+        $group = I('post.group');
+        if($group != 0) {
+            $order_list = $order->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->where(['group'=>$group])->select();
+        } else {
+            // 获取已付款的订单 还需判断是否已确认收货
+            $order_list = $order->where(['status'=>['gt','0']])->where(['received_time'=>'0'])->select();
+        }
+        $count = count($order_list);
         // 提取订单列表满足条件的uid
         if(empty($order_list)) {
             return false;
@@ -336,11 +364,69 @@ class Pdd extends Base{
             if($result == true) $num ++;
         }
 
+        if($num > 0 && $num == $count) {
+            $num = '成功收货'.$num.'单,其余订单未发货!';
+        } elseif($num == 0) {
+            $num = '订单未发货!';
+        } else {
+            $num = '成功收货'.$num.'单';
+        }
         return json_encode([
             'code' => '200',
             'msg'  => '执行成功! 如果为0 则未发货!',
             'num'  => $num,
         ]);
+    }
+
+    public function checkToken($url,$param,$option,$access_token)
+    {
+        $result = Http::get($url,$param,$option,$access_token);
+        $array = json_decode($result,true);
+        if(isset($array['error_code'])) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    public function check()
+    {
+        $url = 'https://mobile.yangkeduo.com/proxy/api/api/flow/user/me/ext?check_is_active=1';
+
+        $model = M('buyer');
+        $group_id = I('get.group_id');
+        // halt($group_id);
+        $list = $model->where(['group'=>$group_id])->select();
+        $ids = [];
+        foreach ($list as $key => $value) {
+            $result = $this->checkToken($url,'','',$value['access_token']);
+            if($result == false) {
+                $ids[] = $value['id'];
+            }
+            if($value['status'] == 0 && $result) {
+                $id_array[] = $value['id'];
+            }
+        }
+
+        // 批量修改用户状态
+        if(!empty($ids)) {
+            $res = $model->where(['id'=>['in',$ids]])->save([
+                    'status' => 0,
+                    'status_msg' => 'Access_token 失效'
+            ]);
+        }
+
+        if(!empty($id_array)) {
+             $res = $model->where(['id'=>['in',$id_array]])->save([
+                    'status' => 1,
+                    'status_msg' => ''
+            ]);
+        }
+
+
+        $this->success('执行成功! 检测异常用户'.count($ids).'位');
+        
     }
 
 }

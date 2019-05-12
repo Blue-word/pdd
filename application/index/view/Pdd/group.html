@@ -11,6 +11,15 @@
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
+    <style type="text/css">
+        .clearfix,.pagination-detail,.pagination-outline{
+            display: none;
+        }
+        .pagination-info {
+            line-height: 34px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 
 <body class="gray-bg">
@@ -29,7 +38,7 @@
                             <h4 class="example-title">买家分组列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/group_insert')}">
+                                    <a href="{:U('Pdd/group_insert')}" style="margin-left: 15px;">
                                         <button type="button" class="btn btn-outline btn-default">
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家分组</i>
                                         </button>
@@ -44,13 +53,13 @@
                                 <div>
                                     
                                      <if condition="$is_received gt 0 ">
-                                      <button class="btn btn-primary btn-sm" onclick="received({$is_received})">待确认收货订单({$is_received})</button>
+                                      <button class="btn btn-primary btn-sm" onclick="received({$is_received},0)">待确认收货订单({$is_received})</button>
                                      <else>
                                          <button class="btn btn-default btn-sm" disabled="disabled">暂无待收货订单</button>
                                      </if>
                                      
                                 </div>
-                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true">
+                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true" data-page-size='50'>
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -91,11 +100,27 @@
 													<a href="{:U('Pdd/buyer_group_info',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >组员</button>
                                                     <a href="{:U('Pdd/group_update',array('id'=>$vo['id']))}"><button class="btn btn-info btn-sm" >编辑</button>
                                                     </a>
+                                                    <a href="{:U('Pdd/check',array('group_id'=>$vo['id']))}"><button class="btn btn-danger btn-sm" >检测用户异常</button>
+                                                    </a>
+
+
+                                                 <if condition="$vo.is_received gt 0 ">
+                                                  <button class="btn btn-primary btn-sm" onclick="received({$vo.is_received},{$vo.id})">待确认收货订单({$vo.is_received})</button>
+                                                 <else>
+                                                     <button class="btn btn-default btn-sm" disabled="disabled">暂无待收货订单</button>
+                                                 </if>
                                                 </td>
                                             </tr>
                                         </foreach>
                                     </tbody>
                                 </table>
+                                <div style="float: left; line-height: 70px;">
+                                    <span class="pagination-info">显示第 1 到第 25 条记录，总共 {$list->total()} 条记录</span>
+                                </div>
+                                
+                                <div style="float: right;">
+                                    {$list->render()}
+                                </div>
                             </div>
                         </div>
                         <!-- End Example Events -->
@@ -116,7 +141,6 @@
 
     <!-- Bootstrap table -->
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
     <!-- Peity -->
@@ -211,7 +235,7 @@
             });
 
 
-        function received(num)
+        function received(num,id)
         {
             // alert('一键收获');
           swal(
@@ -234,6 +258,7 @@
                                 type: 'POST',
                                 url: "{:U('pdd/batchReceiving')}",
                                 dataType: 'json',
+                                data:{group:id},
                                 success: function(index){
                                     if(index == false) {
                                         swal("确认收货失败！", "确认收货失败！", "error");return;
@@ -241,7 +266,7 @@
                                         res = JSON.parse(index);
                                         console.log(res);
                                         var num = res.num;
-                                        swal("确认收获成功！", "成功收货"+num+'件订单', "success");
+                                        swal("确认收获成功！", num, "success");
                                     }
                                 },
                                 error:function(index) {
@@ -249,13 +274,21 @@
                                 },
                             });
                         } else {
-                            swal("已取消", "展示不确认收货！", "error");
+                            swal("已取消", "暂时不确认收货！", "error");
                         }
                     }
                 );
         }
     </script>
 
+
+    <script type="text/javascript">
+        $('#exampleTableEvents').bootstrapTable('destroy');
+        $('#exampleTableEvents').bootstrapTable({
+            'striped':true,
+            'pageSize':'3',
+          });
+    </script>
 </body>
 
 

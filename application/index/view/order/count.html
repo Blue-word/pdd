@@ -15,6 +15,11 @@
 </head>
 
 <body class="gray-bg">
+    <div style="position:fixed; right:3px;z-index: 999;padding-top: 3px;">  
+        <a href="javascript:location.replace(location.href);" title="刷新" >
+            <button class="btn btn-primary btn-circle" type="button" ><i class="fa fa-refresh"></i></button>
+        </a> 
+    </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="ibox float-e-margins">
             <div class="ibox-content">
@@ -25,11 +30,11 @@
                             <h4 class="example-title">交易统计({$title})</h4>
                             <div class="example">
                                 <form method="post" action="">
-                                    <!-- <div class="col-sm-4">
+                                    <div class="col-sm-4">
                                         <input type="text" class="layui-input" id="test6" placeholder=" - ">
                                         <input type="hidden" name="start_datetime" id="start_datetime" value="{$start_datetime}">
                                         <input type="hidden" name="end_datetime" id="end_datetime" value="{$end_datetime}">
-                                    </div> -->
+                                    </div>
                                     <div class="col-sm-2">
                                         <input name="shop_id" class="form-control" value="{$shop_id}" type="text" placeholder="店铺ID">
                                     </div>
@@ -160,6 +165,12 @@
         function PrefixInteger(num, length) {
             return (Array(length).join('0') + num).slice(-length);
         };
+    </script>
+    <script type="text/javascript">
+        $('#exampleTableEvents').bootstrapTable('destroy');
+        $('#exampleTableEvents').bootstrapTable({
+            'striped':true,
+          });
     </script>
 
 </body>

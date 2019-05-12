@@ -11,6 +11,15 @@
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <style type="text/css">
+        .clearfix,.pagination-detail,.pagination-outline{
+            display: none;
+        }
+        .pagination-info {
+            line-height: 34px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 
 <body class="gray-bg">
@@ -29,13 +38,26 @@
                             <h4 class="example-title">买家列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/user_insert')}">
+                                    <a href="{:U('Pdd/user_insert')}" style="margin-left: 15px;">
                                         <button type="button" class="btn btn-outline btn-default">
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加买家信息</i>
                                         </button>
                                     </a>
                                 </div>
-                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true">
+                                <form method="post" action="{:U('Pdd/user')}">
+                                    <div class="col-sm-3">
+                                    <select class="form-control selectpicker show-tick reset" name="status" data-live-search="true"  data-size="6">
+                                        <option value="">请选择用户状态</option>
+                                        <option value="1" <if condition="$status eq 1">selected</if>>正常</option>
+                                        <option value="2" <if condition="$status eq 2">selected</if>>异常</option>
+                                    </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input name="mobile" class="form-control" value="{$mobile}" type="text" placeholder="手机号">
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">搜索</button>
+                                </form>
+                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true" data-page-size='50'>
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -44,6 +66,7 @@
                                             <th>市</th>
                                             <th>区</th>
                                             <th>详细地址</th>
+                                            <th>所属分组</th>
                                             <th>买家状态</th>
                                             <th>买家状态信息</th>
                                             <th width="50">操作</th>
@@ -62,6 +85,7 @@
                                                 <td>{$vo.city}</td>
                                                 <td>{$vo.county}</td>
                                                 <td>{$vo.address}</td>
+                                                <td>{$vo.name}</td>
                                                 <td>
                                                     <div>{$vo.status_msg}</div>
                                                 </td>
@@ -86,6 +110,15 @@
                                         </foreach>
                                     </tbody>
                                 </table>
+                                <div style="float: left; line-height: 70px;">
+                                    <span class="pagination-info">显示第 1 到第 25 条记录，总共 {$list->total()} 条记录</span>
+                                </div>
+                                
+                                <div style="float: right;">
+                                    {$list->render()}
+                                </div>
+                                    
+                                
                             </div>
                         </div>
                         <!-- End Example Events -->
@@ -156,6 +189,14 @@
                     }
                 );
             });
+    </script>
+
+    <script type="text/javascript">
+        $('#exampleTableEvents').bootstrapTable('destroy');
+        $('#exampleTableEvents').bootstrapTable({
+            'striped':true,
+            'pageSize':'3',
+          });
     </script>
 
 </body>

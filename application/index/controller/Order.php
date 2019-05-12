@@ -50,7 +50,7 @@ class Order extends Base
 		            break;
 		        case "1,2":
 		            //成功订单
-		        	$where['status'] = 1;
+		        	$where['status'] = ['in','1,2'];
 		            $where_list['o.status'] = ['in','1,2'];
 		            $curZfType = 3;
 		            break;
@@ -161,18 +161,26 @@ class Order extends Base
     {
         $type = I('type', '', 'trim');
         $shop_id = I('shop_id', '', 'trim');
-        if($type == "yesterday") {
-            // 查询昨日数据
-            $yday =date('Y-m-d',strtotime("-1 day"));
-            $start_datetime = $yday." 00:00:00";
-            $end_datetime = $yday." 23:59:59";
-            $title = "昨日";
-        }else{
-            // 查询今日数据
-            $start_datetime = date('Y-m-d')." 00:00:00";
-            $end_datetime = date('Y-m-d')." 23:59:59";
-            $title = "今日";
+        $start_datetime = I('start_datetime');
+        $end_datetime = I('end_datetime');
+        
+        if($start_datetime && $end_datetime) {
+            $title = '指定时间!';
+        } else {
+            if($type == "yesterday") {
+                // 查询昨日数据
+                $yday =date('Y-m-d',strtotime("-1 day"));
+                $start_datetime = $yday." 00:00:00";
+                $end_datetime = $yday." 23:59:59";
+                $title = "昨日";
+            }else{
+                // 查询今日数据
+                $start_datetime = date('Y-m-d')." 00:00:00";
+                $end_datetime = date('Y-m-d')." 23:59:59";
+                $title = "今日";
+            }
         }
+
         $where = [];
         $where_shop = [];
         $where_count = [];
