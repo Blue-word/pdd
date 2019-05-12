@@ -43,12 +43,6 @@
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加商品</i>
                                         </button>
                                     </a>
-                                    <button type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-heart" aria-hidden="true"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline btn-default">
-                                        <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
-                                    </button>
                                 </div>
                                 <form method="post" action="{:U('goods/goods_list')}">
                                     <div class="col-sm-5">
@@ -61,7 +55,7 @@
                                     </div>
                                     <button class="btn btn-primary" type="submit">搜索</button>
                                 </form>
-                                <table id="exampleTableEvents" data-toggle="table" data-height="860" data-sort-name="First" data-sort-order="desc" data-page-size="50">
+                                <table id="exampleTableEvents" data-height="860" data-sort-name="First" data-sort-order="desc">
                                     <thead>
                                         <tr>
                                             <!-- <th data-field="state" data-checkbox="true"></th> -->
@@ -245,10 +239,17 @@
         });
 
         $(function () {
-            //展示列
+            // 先销毁元素
+            // $('#exampleTableEvents').bootstrapTable('destroy');
+            // 展示列
             // $('#exampleTableEvents').bootstrapTable('showColumn', 'ShopName');
-            //隐藏列 pageSize
+            // 隐藏列 pageSize
             $('#exampleTableEvents').bootstrapTable('hideColumn', 'order_link');
+            // 可添加初始化参数
+            // $('#exampleTableEvents').bootstrapTable({
+            //     'showColumns':true,
+            //     'search': true,
+            // });
         });
     </script>
 
