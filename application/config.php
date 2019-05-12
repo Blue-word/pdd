@@ -114,6 +114,7 @@ return [
     'request_cache_expire'   => null,
     // 全局请求缓存排除规则
     'request_cache_except'   => [],
+    'URL_CASE_INSENSITIVE'   => false,
 
     // +----------------------------------------------------------------------
     // | 模板设置
