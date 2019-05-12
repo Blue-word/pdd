@@ -11,6 +11,15 @@
     <link href="__PUBLIC__/static/css/style.css?v=4.1.0" rel="stylesheet">
     <!-- Sweet Alert -->
     <link href="__PUBLIC__/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <style type="text/css">
+        .clearfix,.pagination-detail,.pagination-outline{
+            display: none;
+        }
+        .pagination-info {
+            line-height: 34px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 
 <body class="gray-bg">
@@ -29,13 +38,13 @@
                             <h4 class="example-title">店铺列表</h4>
                             <div class="example">
                                 <div class="btn-group hidden-xs" id="exampleTableEventsToolbar" role="group">
-                                    <a href="{:U('Pdd/shop_insert')}">
+                                    <a href="{:U('Pdd/shop_insert')}" style="margin-left: 15px;">
                                         <button type="button" class="btn btn-outline btn-default">
                                             <i class="glyphicon glyphicon-plus" aria-hidden="true">添加店铺</i>
                                         </button>
                                     </a>
                                 </div>
-                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true">
+                                <table id="exampleTableEvents" data-height="800" data-mobile-responsive="true" data-page-size='50'>
                                     <thead>
                                         <tr>
                                             <th>店铺ID</th>
@@ -74,8 +83,17 @@
                                         </foreach>
                                     </tbody>
                                 </table>
+                                 <div style="float: left; line-height: 70px;">
+                                    <span class="pagination-info">显示第 1 到第 25 条记录，总共 {$list->total()} 条记录</span>
+                                </div>
+                                
+                                <div style="float: right;">
+                                    {$list->render()}
+                                </div>
                             </div>
                         </div>
+                          
+                       
                         <!-- End Example Events -->
                     </div>
                 </div>
@@ -94,7 +112,6 @@
 
     <!-- Bootstrap table -->
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-    <script src="__PUBLIC__/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
     <script src="__PUBLIC__/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 
     <!-- Peity -->
@@ -187,6 +204,13 @@
                 );
             });
 
+    </script>
+    <script type="text/javascript">
+        $('#exampleTableEvents').bootstrapTable('destroy');
+        $('#exampleTableEvents').bootstrapTable({
+            'striped':true,
+            'pageSize':'3',
+          });
     </script>
 
 </body>
